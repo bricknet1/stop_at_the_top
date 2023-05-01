@@ -1,23 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+// import { Route, Switch } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <div className="play-area">
+        <div className="card" id="card1"></div>
+        <div className="card" id="card2"></div>
+        <div className="card" id="card3"></div>
+        <div className="card" id="card4"></div>
+        <div className="card" id="card5"></div>
+        <div className="card" id="card6"></div>
+        <h1 className='howyouwinthegame'>Stop at the Top!</h1>
+      </div>
     </div>
   );
 }
