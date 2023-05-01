@@ -14,6 +14,7 @@ function Home ({user, navigate}){
     onSubmit: (values) => {
       values.join = Boolean(values.join)
       values.create = Boolean(values.create)
+      values.table = values.table.toUpperCase()
       console.log(values);
       fetch("/table", {
         method: "POST",
