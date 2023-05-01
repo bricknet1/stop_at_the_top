@@ -12,6 +12,7 @@ flask-restful = "*"
 flask-cors = "*"
 flask = "*"
 flask-bcrypt = "*"
+faker = "*"
 
 [dev-packages]
 
