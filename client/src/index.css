@@ -64,4 +64,45 @@
 #card6 {
   left: 670px;
   top: 20px;
+  background-color: red;
+}
+
+.player {
+  border-color: black;
+  border-width: 2px;
+  border-style: dotted;
+  border-radius: 60px;
+  width: 100px;
+  height: 140px;
+  position: absolute;
+}
+
+#player1 {
+  left: 20px;
+  top: 340px;
+}
+
+#player2 {
+  left: 150px;
+  top: 340px;
+}
+
+#player3 {
+  left: 280px;
+  top: 340px;
+}
+
+#player4 {
+  left: 410px;
+  top: 340px;
+}
+
+#player5 {
+  left: 540px;
+  top: 340px;
+}
+
+#player6 {
+  left: 670px;
+  top: 340px;
 }
