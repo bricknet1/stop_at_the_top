@@ -4,12 +4,53 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from flask import request, make_response, session, jsonify, abort, render_template
+from flask import request, make_response, session, jsonify, abort, render_template, redirect, url_for
 from flask_restful import Resource
 from werkzeug.exceptions import NotFound, Unauthorized
+from flask_socketio import join_room, leave_room, send, SocketIO
+import random
+from string import ascii_uppercase
 
 from models import User
 from config import app, db, api
+
+socketio = SocketIO(app)
+
+tables = {}
+
+def generate_unique_code(length):
+    while True:
+        code = ""
+        for i in range(length):
+            code += random.choice(ascii_uppercase)
+        if code not in tables:
+            break
+    return code
+
+@app.route('/table', methods=["POST"])
+def table():
+    # session.clear()
+
+    data = request.get_json()
+
+    # username = request.form.get("username")
+    table = data["table"]
+    join = data["join"]
+    create = data["create"]
+
+    if join != False and not table:
+        return make_response({'error':"Enter a room code."}, 404)
+
+    if create != False:
+        table = generate_unique_code(4)
+        tables[table] = {"players":0, "messages": [], 'table':table}
+    elif table not in tables:
+        return make_response({'error':"Room does not exist."}, 404)
+
+    session['table'] = table
+    # return redirect(url_for("table"))
+    # return print("we here")
+    return make_response(tables[table], 200)
 
 class Signup(Resource):
     def post(self):
@@ -23,6 +64,7 @@ class Signup(Resource):
             db.session.add(user)
             db.session.commit()
             session['user_id'] = user.id
+            session['username'] = user.username
             return make_response(user.to_dict(), 201)
         except Exception as e:
             return make_response({'error': str(e)}, 400)
@@ -35,6 +77,7 @@ class Login(Resource):
         if user:
             if user.authenticate(data['password']):
                 session['user_id'] = user.id
+                session['username'] = user.username
                 return make_response(user.to_dict(), 200)
             else:
                 abort(404, 'Incorrect username or password.')

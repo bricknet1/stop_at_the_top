@@ -11,7 +11,7 @@ function App() {
 
   const navigate = useNavigate();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({username:"temp", chips:0, id:0});
 
   const userFetch = useCallback(fetchUser, [navigate]);
 
@@ -31,7 +31,7 @@ function App() {
           }
         })
       } else {
-        setUser(null)
+        setUser({username:"temp", chips:0, id:0})
       }
     })
   }
@@ -54,7 +54,7 @@ function App() {
     <div className="app">
       <div className="play-area">
         <Routes>
-          <Route exact path="/" element={<Home />} />
+          <Route exact path="/" element={<Home user={user} navigate={navigate}/>} />
           <Route exact path="/login" element={<Login setUser={setUser} />} />
           <Route exact path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/table/:tableID" element={<Game />} />
