@@ -54,7 +54,7 @@ function App() {
     <div className="app">
       <div className="play-area">
         <Routes>
-          <Route exact path="/" element={<Home user={user} navigate={navigate}/>} />
+          <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate}/>:<Login setUser={setUser} />} />
           <Route exact path="/login" element={<Login setUser={setUser} />} />
           <Route exact path="/signup" element={<Signup setUser={setUser} />} />
           <Route path="/table/:tableID" element={<Game />} />

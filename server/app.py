@@ -52,6 +52,8 @@ def table():
     # return print("we here")
     return make_response(tables[table], 200)
 
+
+
 class Signup(Resource):
     def post(self):
         data = request.get_json()
