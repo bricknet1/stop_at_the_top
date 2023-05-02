@@ -29,7 +29,11 @@ function Home ({user, navigate}){
             navigate(`/table/${data.table}`);
           });
         } else {
-          res.json().then((error) => setError(error.error));
+          res.json().then((error) => {
+            setError(error.error)
+            formik.values.join=false
+            formik.values.create=false
+          });
         }
       });
     },

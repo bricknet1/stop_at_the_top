@@ -34,25 +34,27 @@ function Signup({setUser}) {
     validateOnChange: false,
     validateOnBlur: false,
     onSubmit: (values) => {
+      // console.log(JSON.stringify(values));
       fetch('/signupdb', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(values)
-      })
-      .then(res => {
+      }).then(res => {
+        // console.log(res);
         if (res.ok) {
           res.json().then(user => {
             setUser(user)
             navigate('/')
-          })
+          });
         } else {
           res.json().then(error => {
-            if (error.error.includes('users_email_key')) {
+            console.log(error.message);
+            if (error.error.includes('users_email_key') || error.error.includes('UNIQUE constraint failed: users.email')) {
               formik.setErrors({ email: 'An account with this email already exists' });
             }
-            if (error.error.includes('users_username_key')) {
+            if (error.error.includes('users_username_key') || error.error.includes('UNIQUE constraint failed: users.username')) {
               formik.setErrors({ username: 'Username is taken' });
             }                  
             setError(error.message)

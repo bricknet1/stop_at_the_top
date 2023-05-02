@@ -1,8 +1,32 @@
-import { useParams } from "react-router-dom"
+import { useParams } from "react-router-dom";
+import io from 'socket.io-client';
 
 function Game (){
 
   const{tableID} = useParams();
+
+  const socket = io('http://localhost:5555');
+
+  socket.on('connect', () => {
+    console.log('Connected to server');
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+  });
+
+  socket.on('message', (message) => {
+    console.log('Received message:', message);
+  });
+
+  const sendMessage = (message) => {
+    socket.emit('message', message);
+    console.log("sent message: "+message);
+  };
+
+  function handleSendMessage(){
+    sendMessage('test message')
+  }
 
   return (
     <div>
@@ -20,6 +44,7 @@ function Game (){
       <div className="player" id="player4"></div>
       <div className="player" id="player5"></div>
       <div className="player" id="player6"></div>
+      <button onClick={handleSendMessage}>TEST</button>
     </div>
   );
 }

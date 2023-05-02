@@ -24,6 +24,7 @@ function Login({ setUser, setValues }) {
         body: JSON.stringify(values),
       }).then((res) => {
         if (res.ok) {
+          console.log(res);
           res.json().then((user) => {
             setUser(user);
             navigate("/");
@@ -66,7 +67,7 @@ function Login({ setUser, setValues }) {
       <br />
       <br />
       <br />
-      <p>New to Whack-A-Mo-Le?</p>
+      <p>New to Stop at the Top?</p>
       <button className="loginsignupbtn" onClick={handleSignup}>
         Signup Instead
       </button>

@@ -7,14 +7,14 @@ load_dotenv()
 from flask import request, make_response, session, jsonify, abort, render_template, redirect, url_for
 from flask_restful import Resource
 from werkzeug.exceptions import NotFound, Unauthorized
-from flask_socketio import join_room, leave_room, send, SocketIO
+from flask_socketio import join_room, leave_room, send, SocketIO, emit
 import random
 from string import ascii_uppercase
 
 from models import User
 from config import app, db, api
 
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 tables = {}
 
@@ -50,13 +50,71 @@ def table():
     session['table'] = table
     # return redirect(url_for("table"))
     # return print("we here")
-    return make_response(tables[table], 200)
+    response = make_response(tables[table], 200)
+    # response.headers.add('Access-Control-Allow-Origin', '*')
+    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    # response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    # print(response.headers)
+    return response
 
+@socketio.on("message")
+def message(data):
+    table = session.get("table")
+    if table not in tables:
+        return
+    
+    content = {
+        "username": session.get("username"),
+        "message": data["data"]
+    }
+    # content.headers.add('Access-Control-Allow-Origin', '*')
+    # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    send(content, to=table)
+    tables[table]["messages"].append(content)
+    print(f"{session.get('username')} said: {data['data']}")
 
+@socketio.on("connect")
+def connect(auth):
+    table = session.get("table")
+    username = session.get("username")
+    if not table or not username:
+        return
+    if table not in tables:
+        leave_room(table)
+        return
+    
+    join_room(table)
+    content = {"username": username, "message": "has joined the table"}
+    # content.headers.add('Access-Control-Allow-Origin', '*')
+    # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    send(content, to=table)
+    tables[table]["members"] += 1
+    print(f"{username} joined table {table}")
+
+@socketio.on("disconnect")
+def disconnect():
+    table = session.get("table")
+    username = session.get("username")
+    leave_room(table)
+
+    if table in tables:
+        tables[table]["members"] -= 1
+        if tables[table]["members"] <= 0:
+            del tables[table]
+
+    content = {"username": username, "message": "has left the table"}
+    # content.headers.add('Access-Control-Allow-Origin', '*')
+    # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    send(content, to=table)
+    print(f"{username} left table {table}")
 
 class Signup(Resource):
     def post(self):
         data = request.get_json()
+        # print(data)
         try:
             user = User(
                 username=data['username'],
@@ -126,3 +184,4 @@ api.add_resource(Users, '/users/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+    socketio.run(app, debug=True)

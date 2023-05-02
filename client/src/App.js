@@ -42,7 +42,7 @@ function App() {
     })
     .then(res => {
       if(res.ok){
-        setUser(null)
+        setUser({username:"temp", chips:0, id:0})
         navigate('/login')
       }
     })
