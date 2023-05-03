@@ -33,7 +33,6 @@ def table():
 
     data = request.get_json()
 
-    # username = request.form.get("username")
     table = data["table"]
     join = data["join"]
     create = data["create"]
@@ -50,13 +49,8 @@ def table():
     session['table'] = table
     print(session)
     print(tables)
-    # return redirect(url_for("table"))
-    # return print("we here")
+
     response = make_response(tables[table], 200)
-    # response.headers.add('Access-Control-Allow-Origin', '*')
-    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    # response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
-    # print(response.headers)
     return response
 
 @socketio.on("message")
@@ -72,9 +66,6 @@ def message(data):
         "username": session.get("username"),
         "message": data
     }
-    # content.headers.add('Access-Control-Allow-Origin', '*')
-    # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     send(content, to=table)
     tables[table]["messages"].append(content)
     print(f"{session.get('username')} said: {data}")
@@ -91,9 +82,7 @@ def connect(auth):
     
     join_room(table)
     content = {"username": username, "message": "has joined the table"}
-    # content.headers.add('Access-Control-Allow-Origin', '*')
-    # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+
     send(content, to=table)
     tables[table]["players"] += 1
     print(f"{username} joined table {table}")
@@ -110,9 +99,7 @@ def disconnect():
             del tables[table]
 
     content = {"username": username, "message": "has left the table"}
-    # content.headers.add('Access-Control-Allow-Origin', '*')
-    # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+
     send(content, to=table)
     print(f"{username} left table {table}")
 

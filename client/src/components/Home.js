@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import { useState } from 'react';
 
-function Home ({user, navigate}){
+function Home ({user, navigate, setMessages}){
 
   const [error, setError] = useState("");
 
@@ -26,6 +26,7 @@ function Home ({user, navigate}){
         if (res.ok) {
           res.json().then((data) => {
             console.log(data);
+            setMessages(data.messages)
             navigate(`/table/${data.table}`);
           });
         } else {
@@ -40,7 +41,7 @@ function Home ({user, navigate}){
   });
 
   return (
-    <div>
+    <div className="play-area">
       <div className="card" id="card1"></div>
       <div className="card" id="card2"></div>
       <div className="card" id="card3"></div>

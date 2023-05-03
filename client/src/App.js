@@ -12,6 +12,7 @@ function App() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState({username:"temp", chips:0, id:0});
+  const [messages, setMessages] = useState([])
 
   const userFetch = useCallback(fetchUser, [navigate]);
 
@@ -52,14 +53,12 @@ function App() {
 
   return (
     <div className="app">
-      <div className="play-area">
-        <Routes>
-          <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate}/>:<Login setUser={setUser} />} />
-          <Route exact path="/login" element={<Login setUser={setUser} />} />
-          <Route exact path="/signup" element={<Signup setUser={setUser} />} />
-          <Route path="/table/:tableID" element={<Game />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login setUser={setUser} />} />
+        <Route exact path="/login" element={<Login setUser={setUser} />} />
+        <Route exact path="/signup" element={<Signup setUser={setUser} />} />
+        <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
+      </Routes>
       User: {user?.username} -- Chips: {user?.chips} -- 
       {user && <button onClick={handleLogout}>Logout</button>}
     </div>

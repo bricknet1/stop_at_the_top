@@ -38,39 +38,41 @@ function Login({ setUser }) {
 
 
   return (
-    <div className="signup-login">
-      <h2>Login</h2>
-      {error && <h3 style={{ color: "#4FC9C2" }}> {error}</h3>}
-      <form onSubmit={formik.handleSubmit}>
-        <label>Username</label>
-        <br></br>
-        <input
-          type="text"
-          name="username"
-          value={formik.values.username}
-          onChange={formik.handleChange}
-        />
-        <br></br>
-        <br></br>
-        <label>Password</label>
-        <br></br>
-        <input
-          type="password"
-          name="password"
-          value={formik.values.password}
-          onChange={formik.handleChange}
-        />
-        <br></br>
-        <br></br>
-        <input type="submit" value="Log In!" />
-      </form>
-      <br />
-      <br />
-      <br />
-      <p>New to Stop at the Top?</p>
-      <button className="loginsignupbtn" onClick={handleSignup}>
-        Signup Instead
-      </button>
+    <div className="play-area">
+      <div className="signup-login">
+        <h2>Login</h2>
+        {error && <h3 style={{ color: "#4FC9C2" }}> {error}</h3>}
+        <form onSubmit={formik.handleSubmit}>
+          <label>Username</label>
+          <br></br>
+          <input
+            type="text"
+            name="username"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+          />
+          <br></br>
+          <br></br>
+          <label>Password</label>
+          <br></br>
+          <input
+            type="password"
+            name="password"
+            value={formik.values.password}
+            onChange={formik.handleChange}
+          />
+          <br></br>
+          <br></br>
+          <input type="submit" value="Log In!" />
+        </form>
+        <br />
+        <br />
+        <br />
+        <p>New to Stop at the Top?</p>
+        <button className="loginsignupbtn" onClick={handleSignup}>
+          Signup Instead
+        </button>
+      </div>
     </div>
   );
 }

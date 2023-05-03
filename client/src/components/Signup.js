@@ -65,27 +65,29 @@ function Signup({setUser}) {
   })
 
   return (
-    <div className='signup-login'>
-      <h2>Create an Account</h2>
-      <form onSubmit={formik.handleSubmit}>
-        <label >Username</label><br></br>
-        <input type="text"  name="username" value={formik.values.username} onChange={formik.handleChange} /><br></br>
-        <h3 style={{color:'#4FC9C2'}}> {formik.errors.username}</h3>
-        <label >Email</label><br></br>
-        <input type="text"  name="email" value={formik.values.email} onChange={formik.handleChange} /><br></br>
-        <h3 style={{color:'#4FC9C2'}}> {formik.errors.email}</h3>
-        <label >Password</label><br></br>
-        <input type="password"  name="password" value={formik.values.password} onChange={formik.handleChange} /><br></br>
-        <h3 style={{color:'#4FC9C2'}}> {formik.errors.password}</h3>
-        <label >Confirm Password</label><br></br>
-        <input type="password"  name="passwordconfirm" value={formik.values.passwordconfirm} onChange={formik.handleChange} /><br></br>
-        <h3 style={{color:'#4FC9C2'}}> {formik.errors.passwordconfirm}</h3>
-        <input type='submit' value='Create Account!' />
-        {error&& <h3 style={{color:'#4FC9C2'}}> {error}</h3>}
-      </form>
-      <br/>
-      {Object.keys(formik.errors).length>2?null:<><p>Already have an account?</p>
-      <button className='loginsignupbtn' onClick={handleLogin}>Login Instead</button></>}
+    <div className="play-area">
+      <div className='signup-login'>
+        <h2>Create an Account</h2>
+        <form onSubmit={formik.handleSubmit}>
+          <label >Username</label><br></br>
+          <input type="text"  name="username" value={formik.values.username} onChange={formik.handleChange} /><br></br>
+          <h3 style={{color:'#4FC9C2'}}> {formik.errors.username}</h3>
+          <label >Email</label><br></br>
+          <input type="text"  name="email" value={formik.values.email} onChange={formik.handleChange} /><br></br>
+          <h3 style={{color:'#4FC9C2'}}> {formik.errors.email}</h3>
+          <label >Password</label><br></br>
+          <input type="password"  name="password" value={formik.values.password} onChange={formik.handleChange} /><br></br>
+          <h3 style={{color:'#4FC9C2'}}> {formik.errors.password}</h3>
+          <label >Confirm Password</label><br></br>
+          <input type="password"  name="passwordconfirm" value={formik.values.passwordconfirm} onChange={formik.handleChange} /><br></br>
+          <h3 style={{color:'#4FC9C2'}}> {formik.errors.passwordconfirm}</h3>
+          <input type='submit' value='Create Account!' />
+          {error&& <h3 style={{color:'#4FC9C2'}}> {error}</h3>}
+        </form>
+        <br/>
+        {Object.keys(formik.errors).length>2?null:<><p>Already have an account?</p>
+        <button className='loginsignupbtn' onClick={handleLogin}>Login Instead</button></>}
+      </div>
     </div>
   );
 }
