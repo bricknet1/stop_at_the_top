@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 
-function Login({ setUser, setValues }) {
+function Login({ setUser }) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   

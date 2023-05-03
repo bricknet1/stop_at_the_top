@@ -14,7 +14,7 @@ from string import ascii_uppercase
 from models import User
 from config import app, db, api
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", manage_session=True)
 
 tables = {}
 
@@ -48,6 +48,8 @@ def table():
         return make_response({'error':"Room does not exist."}, 404)
 
     session['table'] = table
+    print(session)
+    print(tables)
     # return redirect(url_for("table"))
     # return print("we here")
     response = make_response(tables[table], 200)
@@ -60,6 +62,7 @@ def table():
 @socketio.on("message")
 def message(data):
     table = session.get("table")
+    print(session)
     if table not in tables:
         return
     
