@@ -1,6 +1,8 @@
 
 import { Route, Link, Routes, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, createContext } from 'react';
+
+// import { SocketListener } from './classes/classes.js';
 
 import Game from './components/Game.js';
 import Home from './components/Home.js';
@@ -13,6 +15,12 @@ function App() {
 
   const [user, setUser] = useState({username:"temp", chips:0, id:0});
   const [messages, setMessages] = useState([])
+
+  // const UserContext = createContext();
+  // let listener
+  // useEffect(()=>{
+  //   listener = new SocketListener(messages, setMessages)
+  // },[])
 
   const userFetch = useCallback(fetchUser, [navigate]);
 
@@ -52,16 +60,18 @@ function App() {
   console.log(user);
 
   return (
-    <div className="app">
-      <Routes>
-        <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login setUser={setUser} />} />
-        <Route exact path="/login" element={<Login setUser={setUser} />} />
-        <Route exact path="/signup" element={<Signup setUser={setUser} />} />
-        <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
-      </Routes>
-      User: {user?.username} -- Chips: {user?.chips} -- 
-      {user && <button onClick={handleLogout}>Logout</button>}
-    </div>
+    // <UserContext.Provider value={SocketListener}>
+      <div className="app">
+        <Routes>
+          <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login setUser={setUser} />} />
+          <Route exact path="/login" element={<Login setUser={setUser} />} />
+          <Route exact path="/signup" element={<Signup setUser={setUser} />} />
+          <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
+        </Routes>
+        User: {user?.username} -- Chips: {user?.chips} -- 
+        {user && <button onClick={handleLogout}>Logout</button>}
+      </div>
+    // </UserContext.Provider>
   );
 }
 

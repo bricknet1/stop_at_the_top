@@ -1,44 +1,33 @@
 import { useParams } from "react-router-dom";
-import io from 'socket.io-client';
+import { useEffect, useCallback } from "react";
+// import io from 'socket.io-client';
+import { SocketListener } from '../classes/classes.js';
 
+let listener
 function Game ({messages, setMessages}){
+
+  useEffect(()=>{
+    if (!listener){listener = new SocketListener(setAllMessages)}
+  },[])
 
   const{tableID} = useParams();
 
-  const socket = io('http://localhost:5555', {
-    withCredentials: true
-  });
-
-  socket.on('connect', () => {
-    console.log('Connected to server');
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Disconnected from server');
-  });
-  
-  socket.on('message', (message) => {
-    // console.log('Received message:', message);
-    setMessages([...messages, message['username']+' said '+message['message']])
-    // console.log(messages);
-  });
-
-  function messageDisplay(){
-    const content = []
-    for (let i = 0; i < messages.length; i++){
-      content.push(<p>{messages[i]}</p>)
-    }
-    return (content)
-  }
-
-  const sendMessage = (message) => {
-    socket.emit('message', message);
-    // console.log("sent message: "+message);
-  };
+  const messageDisplay = <div>
+    {messages.map((msg, index) => 
+      <p key={index}>
+        {msg['username']} said: {msg['message']}
+      </p>
+    )}
+  </div>
 
   function handleSendMessage(){
-    sendMessage('test message')
+    listener.sendMessage('test message')
   }
+
+  const setAllMessages = (message) => {
+    setMessages(previousMessages => [...previousMessages, message])
+  }
+  console.log(messages);
 
   return (
     <>
@@ -60,7 +49,8 @@ function Game ({messages, setMessages}){
         <button onClick={handleSendMessage}>TEST</button>
       </div>
       <div className="below-play">
-        {messageDisplay()}
+        Total messages: {messages.length}
+        {messageDisplay}
       </div>
     </>
   );
