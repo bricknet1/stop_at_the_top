@@ -14,7 +14,7 @@ from string import ascii_uppercase
 from models import User
 from config import app, db, api
 
-socketio = SocketIO(app, cors_allowed_origins="*", manage_session=True)
+socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
 
 tables = {}
 
@@ -63,19 +63,21 @@ def table():
 def message(data):
     table = session.get("table")
     print(session)
+    print(table)
+    print(data)
     if table not in tables:
         return
     
     content = {
         "username": session.get("username"),
-        "message": data["data"]
+        "message": data
     }
     # content.headers.add('Access-Control-Allow-Origin', '*')
     # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     send(content, to=table)
     tables[table]["messages"].append(content)
-    print(f"{session.get('username')} said: {data['data']}")
+    print(f"{session.get('username')} said: {data}")
 
 @socketio.on("connect")
 def connect(auth):
@@ -93,7 +95,7 @@ def connect(auth):
     # content.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     # content.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     send(content, to=table)
-    tables[table]["members"] += 1
+    tables[table]["players"] += 1
     print(f"{username} joined table {table}")
 
 @socketio.on("disconnect")
@@ -103,8 +105,8 @@ def disconnect():
     leave_room(table)
 
     if table in tables:
-        tables[table]["members"] -= 1
-        if tables[table]["members"] <= 0:
+        tables[table]["players"] -= 1
+        if tables[table]["players"] <= 0:
             del tables[table]
 
     content = {"username": username, "message": "has left the table"}

@@ -5,7 +5,9 @@ function Game (){
 
   const{tableID} = useParams();
 
-  const socket = io('http://localhost:5555');
+  const socket = io('http://localhost:5555', {
+    withCredentials: true
+  });
 
   socket.on('connect', () => {
     console.log('Connected to server');
