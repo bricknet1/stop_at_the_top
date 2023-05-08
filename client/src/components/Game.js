@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useCallback } from "react";
 // import io from 'socket.io-client';
 import { SocketListener } from '../classes/classes.js';
+import {deck, newShuffledDeck} from './deck.js'
 
 let listener
 function Game ({messages, setMessages}){
@@ -15,7 +16,7 @@ function Game ({messages, setMessages}){
   const messageDisplay = <div>
     {messages.map((msg, index) => 
       <p key={index}>
-        {msg['username']} said: {msg['message']}
+        {msg['username']}: {msg['message']}
       </p>
     )}
   </div>
@@ -29,15 +30,19 @@ function Game ({messages, setMessages}){
   }
   console.log(messages);
 
+  console.log('before deck', deck);
+  const shuffledDeck = newShuffledDeck(deck);
+  console.log('after deck', shuffledDeck);
+
   return (
     <>
       <div className="play-area">
-        <div className="card" id="card1"></div>
-        <div className="card" id="card2"></div>
-        <div className="card" id="card3"></div>
-        <div className="card" id="card4"></div>
-        <div className="card" id="card5"></div>
-        <div className="card" id="card6"></div>
+        <div className="card" id="card1">{shuffledDeck[0]}</div>
+        <div className="card" id="card2">{shuffledDeck[1]}</div>
+        <div className="card" id="card3">{shuffledDeck[2]}</div>
+        <div className="card" id="card4">{shuffledDeck[3]}</div>
+        <div className="card" id="card5">{shuffledDeck[4]}</div>
+        <div className="card" id="card6">{shuffledDeck[5]}</div>
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>
         <div className="player" id="player1"></div>
