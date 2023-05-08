@@ -14,16 +14,13 @@ function brandNewDeck(){
   return newDeck;
 }
 
-// export function newShuffledDeck(deck){
-//   let shuffledDeck = [...deck]
-//   for(let i=0; i<52; i++){
-//     const card = shuffledDeck[i];
-//     const randomPosition = Math.floor(Math.random()*52);
-//     shuffledDeck[i] = shuffledDeck[randomPosition];
-//     shuffledDeck[randomPosition] = card;
-//   }
-//   return shuffledDeck;
-// }
+const deckReducer = (state = brandNewDeck(), action) => {
+  switch(action.type){
+    case 'SHUFFLE':
+      return state=action.payload;
+    default:
+      return state;
+  }
+}
 
-export const deck = brandNewDeck();
-// newShuffledDeck(deck)
+export default deckReducer;

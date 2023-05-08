@@ -4,11 +4,21 @@ import {BrowserRouter as Router} from 'react-router-dom';
 import './index.css';
 import App from './App';
 
+// redux
+import {configureStore} from '@reduxjs/toolkit';
+import allReducers from './reducers'
+import {Provider} from 'react-redux'
+const store = configureStore({
+  reducer: allReducers
+})
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Router>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </Router>
   </React.StrictMode>
 );
