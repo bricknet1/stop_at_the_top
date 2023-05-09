@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 
 export class SocketListener {
   
-  constructor(setAllMessages) {
+  constructor(setAllMessages, setDeckState) {
     console.log('setting up socket');
     const socket = io('http://localhost:5555', {
       withCredentials: true
@@ -22,6 +22,11 @@ export class SocketListener {
       setAllMessages(message)
       // console.log(messages);
     });
+
+    socket.on('shuffle', (deck) => {
+      console.log("setting deck state");
+      setDeckState(deck)
+    });
   
     this.socket = socket;
   }
@@ -30,6 +35,10 @@ export class SocketListener {
     this.socket.emit('message', message);
     // console.log("sent message: "+message);
   };
+
+  shuffleDeck(){
+    this.socket.emit('shuffle');
+  }
 
   // socket.on('message', (data) => {})
 

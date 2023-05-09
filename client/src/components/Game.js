@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards} from '../actions';
+import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck} from '../actions';
 
 let listener
 
@@ -12,12 +12,9 @@ let listener
 function Game ({messages, setMessages}){
   
   const dispatch = useDispatch();
-  
-  // let shuffledDeck = dispatch(shuffle(deck))
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages)}
-    // shuffledDeck = dispatch(shuffle(deck))
+    if (!listener){listener = new SocketListener(setAllMessages, setDeckState)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -46,7 +43,10 @@ function Game ({messages, setMessages}){
   const setAllMessages = (message) => {
     setMessages(previousMessages => [...previousMessages, message])
   }
-  console.log(messages);
+
+  const setDeckState = (deck) => {
+    dispatch(setDeck(deck))
+  }
 
   const revealNextCard = () => {
     if(!card1revealed){
@@ -77,7 +77,8 @@ function Game ({messages, setMessages}){
 
   const hideCards = ()=>{
     dispatch(hideAllCards())
-    dispatch(shuffle(deck))
+    // dispatch(shuffle(deck))
+    listener.shuffleDeck()
   }
 
   return (

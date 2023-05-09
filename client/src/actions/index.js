@@ -12,6 +12,13 @@ export const shuffle = (deck) => {
   }
 }
 
+export const setDeck = (deck) => {
+  return {
+    type: 'SETDECK',
+    payload: deck
+  }
+}
+
 export const revealCard1 = (update)=>{
   return {
     type: 'REVEALCARD1',
