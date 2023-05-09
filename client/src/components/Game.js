@@ -14,7 +14,7 @@ function Game ({messages, setMessages}){
   const dispatch = useDispatch();
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, setDeckState)}
+    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, heardReveal)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -48,31 +48,42 @@ function Game ({messages, setMessages}){
     dispatch(setDeck(deck))
   }
 
+  const heardReveal = () => {
+    revealNextCard()
+  }
+
+  
+
   const revealNextCard = () => {
+    console.log(card1revealed);
+    if(card5revealed){
+      dispatch(revealCard6(true))
+      return
+    }
+    if(card4revealed){
+      dispatch(revealCard5(true))
+      return
+    }
+    if(card3revealed){
+      dispatch(revealCard4(true))
+      return
+    }
+    if(card2revealed){
+      dispatch(revealCard3(true))
+      return
+    }
+    if(card1revealed){
+      dispatch(revealCard2(true))
+      return
+    }
     if(!card1revealed){
       dispatch(revealCard1(true))
       return
     }
-    if(!card2revealed){
-      dispatch(revealCard2(true))
-      return
-    }
-    if(!card3revealed){
-      dispatch(revealCard3(true))
-      return
-    }
-    if(!card4revealed){
-      dispatch(revealCard4(true))
-      return
-    }
-    if(!card5revealed){
-      dispatch(revealCard5(true))
-      return
-    }
-    if(!card6revealed){
-      dispatch(revealCard6(true))
-      return
-    }
+  }
+
+  const emitReveal = ()=>{
+    listener.revealNext()
   }
 
   const hideCards = ()=>{
@@ -99,7 +110,7 @@ function Game ({messages, setMessages}){
         <div className="player" id="player5"></div>
         <div className="player" id="player6"></div>
         <button onClick={handleSendMessage}>TEST MESSAGE</button>
-        <button onClick={revealNextCard}>REVEAL NEXT CARD</button>
+        <button onClick={emitReveal}>REVEAL NEXT CARD</button>
         <button onClick={hideCards}>HIDE ALL CARDS</button>
       </div>
       <div className="below-play">

@@ -112,6 +112,11 @@ def shuffle():
     tables[table]["deck"] = newDeck
     emit("shuffle", newDeck, to=table)
 
+@socketio.on("reveal")
+def reveal():
+    table = session.get("table")
+    emit("reveal", to=table)
+
 class Signup(Resource):
     def post(self):
         data = request.get_json()
