@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 // import io from 'socket.io-client';
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
@@ -13,8 +13,10 @@ function Game ({messages, setMessages}){
   
   const dispatch = useDispatch();
 
+  const cardRef = useRef([]);
+
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, heardReveal)}
+    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -45,39 +47,41 @@ function Game ({messages, setMessages}){
   }
 
   const setDeckState = (deck) => {
+    cardRef.current = []
+    dispatch(hideAllCards())
     dispatch(setDeck(deck))
-  }
-
-  const heardReveal = () => {
-    revealNextCard()
-  }
-
-  
+  }  
 
   const revealNextCard = () => {
     console.log(card1revealed);
-    if(card5revealed){
+    if(cardRef.current[4]===true){
       dispatch(revealCard6(true))
+      cardRef.current.push(true)
       return
     }
-    if(card4revealed){
+    if(cardRef.current[3]===true){
       dispatch(revealCard5(true))
+      cardRef.current.push(true)
       return
     }
-    if(card3revealed){
+    if(cardRef.current[2]===true){
       dispatch(revealCard4(true))
+      cardRef.current.push(true)
       return
     }
-    if(card2revealed){
+    if(cardRef.current[1]===true){
       dispatch(revealCard3(true))
+      cardRef.current.push(true)
       return
     }
-    if(card1revealed){
+    if(cardRef.current[0]===true){
       dispatch(revealCard2(true))
+      cardRef.current.push(true)
       return
     }
     if(!card1revealed){
       dispatch(revealCard1(true))
+      cardRef.current.push(true)
       return
     }
   }
@@ -86,9 +90,13 @@ function Game ({messages, setMessages}){
     listener.revealNext()
   }
 
-  const hideCards = ()=>{
-    dispatch(hideAllCards())
-    // dispatch(shuffle(deck))
+  // const hideCards = ()=>{
+  //   dispatch(hideAllCards())
+  //   // dispatch(shuffle(deck))
+  //   listener.shuffleDeck()
+  // }
+
+  const emitHide = ()=>{
     listener.shuffleDeck()
   }
 
@@ -111,7 +119,7 @@ function Game ({messages, setMessages}){
         <div className="player" id="player6"></div>
         <button onClick={handleSendMessage}>TEST MESSAGE</button>
         <button onClick={emitReveal}>REVEAL NEXT CARD</button>
-        <button onClick={hideCards}>HIDE ALL CARDS</button>
+        <button onClick={emitHide}>HIDE ALL CARDS</button>
       </div>
       <div className="below-play">
         Total messages: {messages.length}
