@@ -27,6 +27,7 @@ function Game ({messages, setMessages}){
   const card6revealed = useSelector(state => state.card6)
   const deck = useSelector(state => state.deck)
 
+  const cardImage = "https://deckofcardsapi.com/static/img/";
 
   const{tableID} = useParams();
 
@@ -53,7 +54,6 @@ function Game ({messages, setMessages}){
   }  
 
   const revealNextCard = () => {
-    console.log(card1revealed);
     if(cardRef.current[4]===true){
       dispatch(revealCard6(true))
       cardRef.current.push(true)
@@ -79,7 +79,7 @@ function Game ({messages, setMessages}){
       cardRef.current.push(true)
       return
     }
-    if(!card1revealed){
+    else {
       dispatch(revealCard1(true))
       cardRef.current.push(true)
       return
@@ -103,12 +103,13 @@ function Game ({messages, setMessages}){
   return (
     <>
       <div className="play-area">
-        <div className="card" id="card1">{card1revealed?deck[0]:'card back'}</div>
-        <div className="card" id="card2">{card2revealed?deck[1]:'card back'}</div>
-        <div className="card" id="card3">{card3revealed?deck[2]:'card back'}</div>
-        <div className="card" id="card4">{card4revealed?deck[3]:'card back'}</div>
-        <div className="card" id="card5">{card5revealed?deck[4]:'card back'}</div>
-        <div className="card" id="card6">{card6revealed?deck[5]:'card back'}</div>
+        <div className="card" id="card1"><img className="playingCard" src={card1revealed?cardImage+deck[0]+'.png':cardImage+'back.png'} alt={card1revealed?deck[0]:"Back of card"} /></div>
+        <div className="card" id="card2"><img className="playingCard" src={card2revealed?cardImage+deck[1]+'.png':cardImage+'back.png'} alt={card2revealed?deck[1]:"Back of card"} /></div>
+        <div className="card" id="card3"><img className="playingCard" src={card3revealed?cardImage+deck[2]+'.png':cardImage+'back.png'} alt={card3revealed?deck[2]:"Back of card"} /></div>
+        <div className="card" id="card4"><img className="playingCard" src={card4revealed?cardImage+deck[3]+'.png':cardImage+'back.png'} alt={card4revealed?deck[3]:"Back of card"} /></div>
+        <div className="card" id="card5"><img className="playingCard" src={card5revealed?cardImage+deck[4]+'.png':cardImage+'back.png'} alt={card5revealed?deck[4]:"Back of card"} /></div>
+        <div className="card" id="card6"><img className="playingCard" src={card6revealed?cardImage+deck[5]+'.png':cardImage+'back.png'} alt={card6revealed?deck[5]:"Back of card"} /></div>
+        <h3 className='superCard'>Super Card!</h3>
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>
         <div className="player" id="player1"></div>

@@ -26,6 +26,17 @@
   top: 150px;
 }
 
+.superCard {
+  font-family: Qwigley;
+  color: yellow;
+  font-size: 28px;
+  text-align: center;
+  position: absolute;
+  width: 100px;
+  top: 140px;
+  left: 675px;
+}
+
 .tableID {
   font-family: Arial;
   color: yellow;
@@ -129,4 +140,12 @@
   top: 550px;
   height: 500px;
   width: 800px;
+}
+
+.playingCard {
+  width: 90px;
+  height: 130px;
+  position: absolute;
+  top: 5px;
+  left: 5px;
 }
