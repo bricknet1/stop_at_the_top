@@ -1,7 +1,10 @@
 import { useFormik } from "formik";
 import { useState } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 
 function Home ({user, navigate, setMessages}){
+
+  const dispatch = useDispatch();
 
   const [error, setError] = useState("");
 

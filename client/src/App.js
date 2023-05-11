@@ -1,6 +1,7 @@
 
 import { Route, Link, Routes, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useCallback, createContext } from 'react';
+import {useSelector, useDispatch} from 'react-redux';
 
 // import { SocketListener } from './classes/classes.js';
 
@@ -11,6 +12,7 @@ import Signup from './components/Signup.js';
 
 function App() {
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [user, setUser] = useState({username:"temp", chips:0, id:0});
