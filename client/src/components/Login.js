@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
+import {useSelector, useDispatch} from 'react-redux';
+import {setUser} from '../actions';
 
-function Login({ setUser }) {
+
+function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [error, setError] = useState("");
   
   function handleSignup() {
@@ -26,7 +30,7 @@ function Login({ setUser }) {
         if (res.ok) {
           console.log(res);
           res.json().then((user) => {
-            setUser(user);
+            dispatch(setUser(user));
             navigate("/");
           });
         } else {

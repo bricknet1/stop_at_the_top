@@ -68,9 +68,9 @@ function App() {
     // <UserContext.Provider value={SocketListener}>
       <div className="app">
         <Routes>
-          <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login setUser={setUser} />} />
-          <Route exact path="/login" element={<Login setUser={setUser} />} />
-          <Route exact path="/signup" element={<Signup setUser={setUser} />} />
+          <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login />} />
+          <Route exact path="/login" element={<Login />} />
+          <Route exact path="/signup" element={<Signup />} />
           <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
         </Routes>
         User: {user?.username} -- Chips: {user?.chips} -- 
