@@ -1,3 +1,10 @@
+export const setUser = (user) => {
+  return {
+    type: 'SETUSER',
+    payload: user
+  }
+}
+
 export const shuffle = (deck) => {
   let shuffledDeck = [...deck]
   for(let i=0; i<52; i++){

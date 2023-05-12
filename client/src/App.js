@@ -5,6 +5,8 @@ import {useSelector, useDispatch} from 'react-redux';
 
 // import { SocketListener } from './classes/classes.js';
 
+import {setUser} from './actions';
+
 import Game from './components/Game.js';
 import Home from './components/Home.js';
 import Login from './components/Login.js';
@@ -15,7 +17,8 @@ function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [user, setUser] = useState({username:"temp", chips:0, id:0});
+  const user = useSelector(state => state.user)
+  // const [user, setUser] = useState({username:"temp", chips:0, id:0});
   const [messages, setMessages] = useState([])
 
   // const UserContext = createContext();
@@ -38,11 +41,11 @@ function App() {
         res.json()
         .then(data => {
           if(data===user){console.log("user matches data")}else{
-            setUser(data)
+            dispatch(setUser(data))
           }
         })
       } else {
-        setUser({username:"temp", chips:0, id:0})
+        dispatch(setUser({username:"temp", chips:0, id:0}))
       }
     })
   }
@@ -53,7 +56,7 @@ function App() {
     })
     .then(res => {
       if(res.ok){
-        setUser({username:"temp", chips:0, id:0})
+        dispatch(setUser({username:"temp", chips:0, id:0}))
         navigate('/login')
       }
     })

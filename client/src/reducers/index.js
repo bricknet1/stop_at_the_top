@@ -1,13 +1,15 @@
 import { combineReducers } from "redux";
 import deckReducer from "./deck";
-import card1Reducer from "./card1.js"
-import card2Reducer from "./card2.js"
-import card3Reducer from "./card3.js"
-import card4Reducer from "./card4.js"
-import card5Reducer from "./card5.js"
-import card6Reducer from "./card6.js"
+import card1Reducer from "./card1";
+import card2Reducer from "./card2";
+import card3Reducer from "./card3";
+import card4Reducer from "./card4";
+import card5Reducer from "./card5";
+import card6Reducer from "./card6";
+import userReducer from "./user";
 
 const allReducers = combineReducers({
+  user: userReducer,
   deck: deckReducer,
   card1: card1Reducer,
   card2: card2Reducer,
