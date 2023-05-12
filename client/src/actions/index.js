@@ -74,3 +74,10 @@ export const hideAllCards = ()=>{
     payload: false
   }
 }
+
+export const addPlayer = (players) => {
+  return {
+    type: 'ADDPLAYER',
+    payload: players
+  }
+}

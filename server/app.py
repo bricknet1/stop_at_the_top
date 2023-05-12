@@ -42,13 +42,14 @@ def table():
 
     if create != False:
         table = generate_unique_code(4)
-        tables[table] = {"players":0, "messages": [], 'table':table, "deck": []}
+        tables[table] = {"playercount":0, "messages": [], 'table':table, "deck": [], "players":[]}
     elif table not in tables:
         return make_response({'error':"Room does not exist."}, 404)
 
     session['table'] = table
-    print(session)
-    print(tables)
+    # emit("newplayer", username, to=table)
+    # print(session)
+    # print(tables)
 
     response = make_response(tables[table], 200)
     return response
@@ -84,8 +85,9 @@ def connect(auth):
     content = {"username": username, "message": "has joined the table"}
 
     send(content, to=table)
-    tables[table]["players"] += 1
+    tables[table]["playercount"] += 1
     print(f"{username} joined table {table}")
+    emit("newplayer", username, to=table)
 
 @socketio.on("disconnect")
 def disconnect():
@@ -94,8 +96,8 @@ def disconnect():
     leave_room(table)
 
     if table in tables:
-        tables[table]["players"] -= 1
-        if tables[table]["players"] <= 0:
+        tables[table]["playercount"] -= 1
+        if tables[table]["playercount"] <= 0:
             del tables[table]
 
     content = {"username": username, "message": "has left the table"}

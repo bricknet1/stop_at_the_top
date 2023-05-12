@@ -2,7 +2,7 @@ import io from 'socket.io-client';
 
 export class SocketListener {
   
-  constructor(setAllMessages, setDeckState, revealNextCard) {
+  constructor(setAllMessages, setDeckState, revealNextCard, setAllPlayers) {
     console.log('setting up socket');
     const socket = io('http://localhost:5555', {
       withCredentials: true
@@ -29,6 +29,11 @@ export class SocketListener {
     });
 
     socket.on('reveal', revealNextCard.bind(this))
+
+    socket.on('newplayer', (newPlayer) => {
+      console.log('setting players');
+      setAllPlayers(newPlayer)
+    })
   
     this.socket = socket;
   }

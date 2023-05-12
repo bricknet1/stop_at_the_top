@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck} from '../actions';
+import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer} from '../actions';
 
 let listener
 
@@ -16,7 +16,7 @@ function Game ({messages, setMessages}){
   const cardRef = useRef([]);
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard)}
+    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, setAllPlayers)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -26,6 +26,9 @@ function Game ({messages, setMessages}){
   const card5revealed = useSelector(state => state.card5)
   const card6revealed = useSelector(state => state.card6)
   const deck = useSelector(state => state.deck)
+  const players = useSelector(state => state.players)
+
+  console.log(players);
 
   const cardImage = "https://deckofcardsapi.com/static/img/";
 
@@ -45,6 +48,10 @@ function Game ({messages, setMessages}){
 
   const setAllMessages = (message) => {
     setMessages(previousMessages => [...previousMessages, message])
+  }
+
+  const setAllPlayers = (newPlayer) => {
+    dispatch(addPlayer(newPlayer))
   }
 
   const setDeckState = (deck) => {
@@ -112,17 +119,18 @@ function Game ({messages, setMessages}){
         <h3 className='superCard'>Super Card!</h3>
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>
-        <div className="player" id="player1"></div>
-        <div className="player" id="player2"></div>
-        <div className="player" id="player3"></div>
-        <div className="player" id="player4"></div>
-        <div className="player" id="player5"></div>
-        <div className="player" id="player6"></div>
+        <div className="player" id="player1">{players[0]}</div>
+        <div className="player" id="player2">{players[1]}</div>
+        <div className="player" id="player3">{players[2]}</div>
+        <div className="player" id="player4">{players[3]}</div>
+        <div className="player" id="player5">{players[4]}</div>
+        <div className="player" id="player6">{players[5]}</div>
         <button onClick={handleSendMessage}>TEST MESSAGE</button>
         <button onClick={emitReveal}>REVEAL NEXT CARD</button>
         <button onClick={emitHide}>HIDE ALL CARDS</button>
       </div>
       <div className="below-play">
+        Total players: {players.length}<br/>
         Total messages: {messages.length}
         {messageDisplay}
       </div>

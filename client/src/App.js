@@ -73,7 +73,7 @@ function App() {
           <Route exact path="/signup" element={<Signup />} />
           <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
         </Routes>
-        User: {user?.username} -- Chips: {user?.chips} -- 
+        User: {user.username} -- ID: {user.id} -- Chips: {user.chips} -- 
         {user && <button onClick={handleLogout}>Logout</button>}
       </div>
     // </UserContext.Provider>
