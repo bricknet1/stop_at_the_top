@@ -111,6 +111,12 @@ function Game ({messages, setMessages}){
     listener.shuffleDeck()
   }
 
+  const playMarker = () => {
+    const revealedCards = [card1revealed, card2revealed, card3revealed, card4revealed, card5revealed, card6revealed]
+    const currentCard = ((revealedCards.findIndex(x => x===false))-1)<0?5:(revealedCards.findIndex(x => x===false))-1
+    console.log('the current card is index '+currentCard);
+  }
+
   return (
     <>
       <div className="play-area">
@@ -132,6 +138,7 @@ function Game ({messages, setMessages}){
         <button onClick={handleSendMessage}>TEST MESSAGE</button>
         <button onClick={emitReveal}>REVEAL NEXT CARD</button>
         <button onClick={emitHide}>HIDE ALL CARDS</button>
+        <button onClick={playMarker}>Put marker on active card</button>
       </div>
       <div className="below-play">
         Total players: {players.length}<br/>
