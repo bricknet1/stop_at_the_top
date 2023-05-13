@@ -1,8 +1,9 @@
 import io from 'socket.io-client';
+import { setAllPlayers } from '../actions';
 
 export class SocketListener {
   
-  constructor(setAllMessages, setDeckState, revealNextCard, setAllPlayers) {
+  constructor(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers) {
     console.log('setting up socket');
     const socket = io('http://localhost:5555', {
       withCredentials: true
@@ -31,8 +32,13 @@ export class SocketListener {
     socket.on('reveal', revealNextCard.bind(this))
 
     socket.on('newplayer', (newPlayer) => {
-      console.log('setting players');
-      setAllPlayers(newPlayer)
+      console.log('adding new player');
+      addNewPlayer(newPlayer)
+    })
+
+    socket.on('setplayers', (players) => {
+      console.log('setting all players');
+      updateAllPlayers(players)
     })
   
     this.socket = socket;

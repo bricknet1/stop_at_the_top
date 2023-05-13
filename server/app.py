@@ -83,11 +83,15 @@ def connect(auth):
     
     join_room(table)
     content = {"username": username, "message": "has joined the table"}
-
     send(content, to=table)
-    tables[table]["playercount"] += 1
+    
+    if username not in tables[table]["players"]:
+        tables[table]["playercount"] += 1
+        tables[table]["players"].append(session.get("username"))
+    print(f"{tables[table]}")
     print(f"{username} joined table {table}")
-    emit("newplayer", username, to=table)
+    # emit("newplayer", username, to=table)
+    emit("setplayers", tables[table]["players"], to=table)
 
 @socketio.on("disconnect")
 def disconnect():
@@ -96,6 +100,8 @@ def disconnect():
     leave_room(table)
 
     if table in tables:
+        tables[table]["players"].remove(username)
+        emit("setplayers", tables[table]["players"], to=table)
         tables[table]["playercount"] -= 1
         if tables[table]["playercount"] <= 0:
             del tables[table]
@@ -104,6 +110,8 @@ def disconnect():
 
     send(content, to=table)
     print(f"{username} left table {table}")
+
+
 
 newDeck = ["2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "0S", "JS", "QS", "KS", "AS", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "0D", "JD", "QD", "KD", "AD", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "0C", "JC", "QC", "KC", "AC", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "0H", "JH", "QH", "KH", "AH"]
 

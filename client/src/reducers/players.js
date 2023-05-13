@@ -6,6 +6,8 @@ const playersReducer = (state = [], action) => {
       }else{
         return state = [...state, action.payload]
       };
+    case 'SETALLPLAYERS':
+      return state = action.payload;
     default:
       return state;
   }

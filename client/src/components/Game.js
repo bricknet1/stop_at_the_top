@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer} from '../actions';
+import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers} from '../actions';
 
 let listener
 
@@ -16,7 +16,7 @@ function Game ({messages, setMessages}){
   const cardRef = useRef([]);
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, setAllPlayers)}
+    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -34,9 +34,9 @@ function Game ({messages, setMessages}){
 
   const{tableID} = useParams();
 
-  const messageDisplay = <div>
-    {messages.map((msg, index) => 
-      <p key={index}>
+  const messageDisplay = <div className="messages">
+    {messages.slice(0).reverse().map((msg, index) => 
+      <p className="message" key={index}>
         {msg['username']}: {msg['message']}
       </p>
     )}
@@ -50,8 +50,12 @@ function Game ({messages, setMessages}){
     setMessages(previousMessages => [...previousMessages, message])
   }
 
-  const setAllPlayers = (newPlayer) => {
+  const addNewPlayer = (newPlayer) => {
     dispatch(addPlayer(newPlayer))
+  }
+
+  const updateAllPlayers = (players) => {
+    dispatch(setAllPlayers(players))
   }
 
   const setDeckState = (deck) => {

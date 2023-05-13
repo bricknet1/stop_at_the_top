@@ -75,9 +75,16 @@ export const hideAllCards = ()=>{
   }
 }
 
-export const addPlayer = (players) => {
+export const addPlayer = (player) => {
   return {
     type: 'ADDPLAYER',
+    payload: player
+  }
+}
+
+export const setAllPlayers = (players) => {
+  return {
+    type: 'SETALLPLAYERS',
     payload: players
   }
 }
