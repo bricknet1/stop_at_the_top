@@ -18,7 +18,8 @@ with app.app_context():
         id=1,
         username='bricknet',
         email='test@test.com',
-        chips=5000
+        chips=5000,
+        marker='https://raw.githubusercontent.com/bricknet1/whackamole/main/client/src/images/avocado1.png'
     )
     user1.password_hash='boat'
     users.append(user1)
