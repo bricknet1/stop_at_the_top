@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers} from '../actions';
+import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard} from '../actions';
 
 let listener
 
@@ -27,6 +27,8 @@ function Game ({messages, setMessages}){
   const card6revealed = useSelector(state => state.card6)
   const deck = useSelector(state => state.deck)
   const players = useSelector(state => state.players)
+  const selectedCard = useSelector(state => state.selectedCard)
+  const user = useSelector(state => state.user)
 
   console.log(players);
 
@@ -109,23 +111,43 @@ function Game ({messages, setMessages}){
 
   const emitHide = ()=>{
     listener.shuffleDeck()
+    dispatch(setSelectedCard(false))
   }
 
   const playMarker = () => {
     const revealedCards = [card1revealed, card2revealed, card3revealed, card4revealed, card5revealed, card6revealed]
     const currentCard = ((revealedCards.findIndex(x => x===false))-1)<0?5:(revealedCards.findIndex(x => x===false))-1
     console.log('the current card is index '+currentCard);
+    if (selectedCard===false && card6revealed===false){dispatch(setSelectedCard(currentCard))}
   }
 
   return (
     <>
       <div className="play-area">
-        <div className="card" id="card1"><img className="playingCard" src={card1revealed?cardImage+deck[0]+'.png':cardImage+'back.png'} alt={card1revealed?deck[0]:"Back of card"} /></div>
-        <div className="card" id="card2"><img className="playingCard" src={card2revealed?cardImage+deck[1]+'.png':cardImage+'back.png'} alt={card2revealed?deck[1]:"Back of card"} /></div>
-        <div className="card" id="card3"><img className="playingCard" src={card3revealed?cardImage+deck[2]+'.png':cardImage+'back.png'} alt={card3revealed?deck[2]:"Back of card"} /></div>
-        <div className="card" id="card4"><img className="playingCard" src={card4revealed?cardImage+deck[3]+'.png':cardImage+'back.png'} alt={card4revealed?deck[3]:"Back of card"} /></div>
-        <div className="card" id="card5"><img className="playingCard" src={card5revealed?cardImage+deck[4]+'.png':cardImage+'back.png'} alt={card5revealed?deck[4]:"Back of card"} /></div>
-        <div className="card" id="card6"><img className="playingCard" src={card6revealed?cardImage+deck[5]+'.png':cardImage+'back.png'} alt={card6revealed?deck[5]:"Back of card"} /></div>
+        <div className="card" id="card1">
+          <img className="playingCard" src={card1revealed?cardImage+deck[0]+'.png':cardImage+'back.png'} alt={card1revealed?deck[0]:"Back of card"} />
+          <div className="markers">{selectedCard===0?user.username:''}</div>
+        </div>
+        <div className="card" id="card2">
+          <img className="playingCard" src={card2revealed?cardImage+deck[1]+'.png':cardImage+'back.png'} alt={card2revealed?deck[1]:"Back of card"} />
+          <div className="markers">{selectedCard===1?user.username:''}</div>
+        </div>
+        <div className="card" id="card3">
+          <img className="playingCard" src={card3revealed?cardImage+deck[2]+'.png':cardImage+'back.png'} alt={card3revealed?deck[2]:"Back of card"} />
+          <div className="markers">{selectedCard===2?user.username:''}</div>
+        </div>
+        <div className="card" id="card4">
+          <img className="playingCard" src={card4revealed?cardImage+deck[3]+'.png':cardImage+'back.png'} alt={card4revealed?deck[3]:"Back of card"} />
+          <div className="markers">{selectedCard===3?user.username:''}</div>
+        </div>
+        <div className="card" id="card5">
+          <img className="playingCard" src={card5revealed?cardImage+deck[4]+'.png':cardImage+'back.png'} alt={card5revealed?deck[4]:"Back of card"} />
+          <div className="markers">{selectedCard===4?user.username:''}</div>
+        </div>
+        <div className="card" id="card6">
+          <img className="playingCard" src={card6revealed?cardImage+deck[5]+'.png':cardImage+'back.png'} alt={card6revealed?deck[5]:"Back of card"} />
+          <div className="markers" >{selectedCard===5?user.username:''}</div>
+        </div>
         <h3 className='superCard'>Super Card!</h3>
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>

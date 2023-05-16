@@ -88,3 +88,10 @@ export const setAllPlayers = (players) => {
     payload: players
   }
 }
+
+export const setSelectedCard = (index) => {
+  return {
+    type: 'SETSELECTEDCARD',
+    payload: index
+  }
+}

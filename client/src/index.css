@@ -166,3 +166,12 @@
 .message {
   margin-left: 5px;
 }
+
+.markers {
+  width: 70px;
+  height: 110px;
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+

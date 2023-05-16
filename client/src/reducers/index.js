@@ -8,6 +8,7 @@ import card5Reducer from "./card5";
 import card6Reducer from "./card6";
 import userReducer from "./user";
 import playersReducer from "./players";
+import selectedCardReducer from "./selectedCard";
 
 const allReducers = combineReducers({
   user: userReducer,
@@ -18,7 +19,8 @@ const allReducers = combineReducers({
   card4: card4Reducer,
   card5: card5Reducer,
   card6: card6Reducer,
-  players: playersReducer
+  players: playersReducer,
+  selectedCard: selectedCardReducer
 });
 
 export default allReducers;
