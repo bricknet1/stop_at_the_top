@@ -102,3 +102,16 @@ export const setMarkers = (data) => {
     payload: data
   }
 }
+
+export const updateBet = (number) => {
+  return {
+    type: 'UPDATEBET',
+    payload: number
+  }
+}
+
+export const resetBet = () => {
+  return {
+    type: 'RESETBET'
+  }
+}

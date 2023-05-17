@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers} from '../actions';
+import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, updateBet, resetBet, setUser} from '../actions';
 
 let listener
 
@@ -14,6 +14,8 @@ function Game ({messages, setMessages}){
   const dispatch = useDispatch();
 
   const cardRef = useRef([]);
+
+  const [betPlaced, setBetPlaced] = useState(false);
 
   useEffect(()=>{
     if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers)}
@@ -30,8 +32,7 @@ function Game ({messages, setMessages}){
   const selectedCard = useSelector(state => state.selectedCard)
   const user = useSelector(state => state.user)
   const markers = useSelector(state => state.markers)
-
-  // console.log(players);
+  const bet = useSelector(state => state.bet)
 
   const cardImage = "https://deckofcardsapi.com/static/img/";
 
@@ -113,6 +114,8 @@ function Game ({messages, setMessages}){
   const emitHide = ()=>{
     listener.shuffleDeck()
     dispatch(setSelectedCard(false))
+    dispatch(resetBet())
+    setBetPlaced(false)
   }
 
   const playMarker = () => {
@@ -137,6 +140,33 @@ function Game ({messages, setMessages}){
         </div>
       )
     })
+  }
+
+  const bet10 = () => {
+    if(betPlaced===false){dispatch(updateBet(10))}
+  }
+
+  const bet100 = () => {
+    if(betPlaced===false){dispatch(updateBet(100))}
+  }
+
+  const placeBet = () => {
+    const values = {'chips':user['chips']-bet}
+    if(betPlaced===false){fetch(`/users/${user['id']}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(values)
+    })
+    .then(res => {
+      if (res.ok) {
+        res.json().then(data => {
+          dispatch(setUser(data));
+          setBetPlaced(true);
+        })
+      }
+    })}
   }
 
   return (
@@ -187,6 +217,7 @@ function Game ({messages, setMessages}){
         <h3 className='superCard'>Super Card!</h3>
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>
+        <p className="bet">Current Bet: {bet}</p>
         <div className="player" id="player1">{players[0]}</div>
         <div className="player" id="player2">{players[1]}</div>
         <div className="player" id="player3">{players[2]}</div>
@@ -195,8 +226,11 @@ function Game ({messages, setMessages}){
         <div className="player" id="player6">{players[5]}</div>
         <button onClick={handleSendMessage}>TEST MESSAGE</button>
         <button onClick={emitReveal}>REVEAL NEXT CARD</button>
-        <button onClick={emitHide}>HIDE ALL CARDS</button>
-        <button onClick={playMarker}>Put marker on active card</button>
+        <button onClick={emitHide}>RESET GAME</button>
+        <button onClick={playMarker}>PLACE MARKER</button>
+        <button onClick={bet10}>Bet 10</button>
+        <button onClick={bet100}>Bet 100</button>
+        <button onClick={placeBet}>Place Bet</button>
       </div>
       <div className="below-play">
         Total players: {players.length}<br/>
