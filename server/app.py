@@ -42,7 +42,7 @@ def table():
 
     if create != False:
         table = generate_unique_code(4)
-        tables[table] = {"playercount":0, "messages": [], 'table':table, "deck": [], "players":[]}
+        tables[table] = {"playercount":0, "messages": [], 'table':table, "deck": [], "players":[], "markers":{0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}}
     elif table not in tables:
         return make_response({'error':"Room does not exist."}, 404)
 
@@ -57,9 +57,9 @@ def table():
 @socketio.on("message")
 def message(data):
     table = session.get("table")
-    print(session)
-    print(table)
-    print(data)
+    # print(session)
+    # print(table)
+    # print(data)
     if table not in tables:
         return
     
@@ -70,6 +70,16 @@ def message(data):
     send(content, to=table)
     tables[table]["messages"].append(content)
     print(f"{session.get('username')} said: {data}")
+
+@socketio.on("placemarker")
+def placemarker(data):
+    table = session.get("table")
+    username = data["username"]
+    index = data["index"]
+    # print("made it this far")
+    tables[table]["markers"][index].append(username)
+    print(tables[table]["markers"][index])
+    emit("markerplaced", tables[table]["markers"], to=table)
 
 @socketio.on("connect")
 def connect(auth):
@@ -118,6 +128,8 @@ newDeck = ["2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "0S", "JS", "QS", "KS
 @socketio.on("shuffle")
 def shuffle():
     table = session.get("table")
+    tables[table]["markers"] = {0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}
+    emit("markerplaced", tables[table]["markers"], to=table)
     random.shuffle(newDeck)
     tables[table]["deck"] = newDeck
     emit("shuffle", newDeck, to=table)

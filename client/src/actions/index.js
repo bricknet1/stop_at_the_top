@@ -95,3 +95,10 @@ export const setSelectedCard = (index) => {
     payload: index
   }
 }
+
+export const setMarkers = (data) => {
+  return {
+    type: 'SETMARKERS',
+    payload: data
+  }
+}
