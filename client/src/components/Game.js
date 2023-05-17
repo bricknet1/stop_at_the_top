@@ -133,7 +133,7 @@ function Game ({messages, setMessages}){
     return markers[cardIndex].map((username, i) => {
       return (
         <div className={`marker${i}`} key={i}>
-          {username}
+          {username[0]}
         </div>
       )
     })
