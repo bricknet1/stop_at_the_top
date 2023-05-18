@@ -150,7 +150,7 @@ function Game ({messages, setMessages}){
     if(betPlaced===false){dispatch(updateBet(100))}
   }
 
-  const placeBet = () => {
+  const playBet = () => {
     const values = {'chips':user['chips']-bet}
     if(betPlaced===false){fetch(`/users/${user['id']}`, {
       method: 'PATCH',
@@ -164,6 +164,7 @@ function Game ({messages, setMessages}){
         res.json().then(data => {
           dispatch(setUser(data));
           setBetPlaced(true);
+          listener.placeBet({"username":user.username, "chips":user['chips']-bet, "bet":bet})
         })
       }
     })}
@@ -230,7 +231,7 @@ function Game ({messages, setMessages}){
         <button onClick={playMarker}>PLACE MARKER</button>
         <button onClick={bet10}>Add 10</button>
         <button onClick={bet100}>Add 100</button>
-        <button onClick={placeBet}>Place Bet</button>
+        <button onClick={playBet}>Place Bet</button>
       </div>
       <div className="below-play">
         Total players: {players.length}<br/>

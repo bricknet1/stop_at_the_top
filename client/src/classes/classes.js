@@ -65,6 +65,10 @@ export class SocketListener {
     this.socket.emit('placemarker', data)
   }
 
+  placeBet(data){
+    this.socket.emit('placebet', data)
+  }
+
   // socket.on('message', (data) => {})
 
   // sentMessage(msg){

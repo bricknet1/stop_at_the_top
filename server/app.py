@@ -81,10 +81,22 @@ def placemarker(data):
     print(tables[table]["markers"][index])
     emit("markerplaced", tables[table]["markers"], to=table)
 
+@socketio.on("placebet")
+def placebet(data):
+    table = session.get("table")
+    username = data["username"]
+    chips = data["chips"]
+    bet = data["bet"]
+    currentPlayers = tables[table]["players"]
+    updatedPlayers = [{"username":username, "chips":chips, "bet":bet} for player in currentPlayers if player.get("username") == username]
+    tables[table]["players"] = updatedPlayers
+    emit("setplayers", tables[table]["players"], to=table)
+
 @socketio.on("connect")
 def connect(auth):
     table = session.get("table")
     username = session.get("username")
+    user = User.query.filter_by(username=username).first()
     if not table or not username:
         return
     if table not in tables:
@@ -95,10 +107,9 @@ def connect(auth):
     content = {"username": username, "message": "has joined the table"}
     send(content, to=table)
     
-    if username not in tables[table]["players"]:
-        # print(session)
+    if not any(obj["username"] == username for obj in tables[table]["players"]):
         tables[table]["playercount"] += 1
-        tables[table]["players"].append({"username":session.get("username"), "chips":0, "bet":0})
+        tables[table]["players"].append({"username":username, "chips":user.chips, "bet":0})
     print(f"{tables[table]}")
     print(f"{username} joined table {table}")
     # emit("newplayer", username, to=table)
@@ -136,6 +147,17 @@ def shuffle():
     random.shuffle(newDeck)
     tables[table]["deck"] = newDeck
     emit("shuffle", newDeck, to=table)
+
+@socketio.on("payout")
+def payout(data):
+    outcomes = data["outcomes"]
+    # to test, make a button for everyone wins and another for everyone loses
+    # outcomes could be lose, win, superwin
+    # outcomes will be a list corresponding to each player position, so index 0 outcome is for index 0 player
+    # if lose, simply set bet to 0
+    # if win, add 2x bet to chips and then set bet to 0
+    # if superwin, add 3x bet to chips and then set bet to 0
+    # do this for all players and then emit("setplayers", tables[table]["players"], to=table)
 
 @socketio.on("reveal")
 def reveal():
