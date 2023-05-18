@@ -150,14 +150,19 @@ def shuffle():
 
 @socketio.on("payout")
 def payout(data):
-    outcomes = data["outcomes"]
-    # to test, make a button for everyone wins and another for everyone loses
-    # outcomes could be lose, win, superwin
-    # outcomes will be a list corresponding to each player position, so index 0 outcome is for index 0 player
-    # if lose, simply set bet to 0
-    # if win, add 2x bet to chips and then set bet to 0
-    # if superwin, add 3x bet to chips and then set bet to 0
-    # do this for all players and then emit("setplayers", tables[table]["players"], to=table)
+    table = session.get("table")
+    currentPlayers = tables[table]["players"]
+    for i in range(len(currentPlayers)):
+        print(currentPlayers[i])
+        if data[i] == "win":
+            currentPlayers[i]["chips"] = currentPlayers[i]["chips"]+(2*(currentPlayers[i]["bet"]))
+        if data[i] == "superwin":
+            currentPlayers[i]["chips"] = currentPlayers[i]["chips"]+(3*(currentPlayers[i]["bet"]))
+        currentPlayers[i]["bet"] = 0
+        print(currentPlayers[i])
+    print(currentPlayers)
+    tables[table]["players"] = currentPlayers
+    emit("setplayers", tables[table]["players"], to=table)
 
 @socketio.on("reveal")
 def reveal():
@@ -167,7 +172,6 @@ def reveal():
 class Signup(Resource):
     def post(self):
         data = request.get_json()
-        # print(data)
         try:
             user = User(
                 username=data['username'],

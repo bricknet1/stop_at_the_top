@@ -170,6 +170,14 @@ function Game ({messages, setMessages}){
     })}
   }
 
+  const wintest = () => {
+    listener.payout(["win", "win", "win", "win", "win", "win"])
+  }
+
+  const losetest = () => {
+    listener.payout(["lose", "lose", "lose", "lose", "lose", "lose"])
+  }
+
   return (
     <>
       <div className="play-area">
@@ -225,13 +233,15 @@ function Game ({messages, setMessages}){
         <div className="player" id="player4">{players[3]?.username}<br/>Chips: {players[3]?.chips}<br/>Bet: {players[3]?.bet}</div>
         <div className="player" id="player5">{players[4]?.username}<br/>Chips: {players[4]?.chips}<br/>Bet: {players[4]?.bet}</div>
         <div className="player" id="player6">{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
-        <button onClick={handleSendMessage}>TEST MESSAGE</button>
-        <button onClick={emitReveal}>REVEAL NEXT CARD</button>
+        <button onClick={handleSendMessage}>MESSAGE</button>
+        <button onClick={emitReveal}>REVEAL CARD</button>
         <button onClick={emitHide}>RESET GAME</button>
         <button onClick={playMarker}>PLACE MARKER</button>
         <button onClick={bet10}>Add 10</button>
         <button onClick={bet100}>Add 100</button>
         <button onClick={playBet}>Place Bet</button>
+        <button onClick={wintest}>Win</button>
+        <button onClick={losetest}>Lose</button>
       </div>
       <div className="below-play">
         Total players: {players.length}<br/>

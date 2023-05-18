@@ -69,6 +69,10 @@ export class SocketListener {
     this.socket.emit('placebet', data)
   }
 
+  payout(data){
+    this.socket.emit('payout', data)
+  }
+
   // socket.on('message', (data) => {})
 
   // sentMessage(msg){
