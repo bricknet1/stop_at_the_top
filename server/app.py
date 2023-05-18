@@ -96,8 +96,9 @@ def connect(auth):
     send(content, to=table)
     
     if username not in tables[table]["players"]:
+        # print(session)
         tables[table]["playercount"] += 1
-        tables[table]["players"].append(session.get("username"))
+        tables[table]["players"].append({"username":session.get("username"), "chips":0, "bet":0})
     print(f"{tables[table]}")
     print(f"{username} joined table {table}")
     # emit("newplayer", username, to=table)
@@ -110,7 +111,9 @@ def disconnect():
     leave_room(table)
 
     if table in tables:
-        tables[table]["players"].remove(username)
+        currentPlayers = tables[table]["players"]
+        updatedPlayers = [player for player in currentPlayers if player.get("username") != username]
+        tables[table]["players"] = updatedPlayers
         emit("setplayers", tables[table]["players"], to=table)
         tables[table]["playercount"] -= 1
         if tables[table]["playercount"] <= 0:
