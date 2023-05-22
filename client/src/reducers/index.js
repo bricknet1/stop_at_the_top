@@ -11,6 +11,7 @@ import playersReducer from "./players";
 import selectedCardReducer from "./selectedCard";
 import markersReducer from "./markers";
 import betReducer from "./bet";
+import winningCardReducer from "./winningCard";
 
 const allReducers = combineReducers({
   user: userReducer,
@@ -24,7 +25,8 @@ const allReducers = combineReducers({
   players: playersReducer,
   selectedCard: selectedCardReducer,
   markers: markersReducer,
-  bet: betReducer
+  bet: betReducer,
+  winningCard: winningCardReducer
 });
 
 export default allReducers;

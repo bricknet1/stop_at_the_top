@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, updateBet, resetBet, setUser} from '../actions';
+import {shuffle, revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, updateBet, resetBet, setUser, setWinningCard, resetWinningCard} from '../actions';
 
 let listener
 
@@ -33,6 +33,7 @@ function Game ({messages, setMessages}){
   const user = useSelector(state => state.user)
   const markers = useSelector(state => state.markers)
   const bet = useSelector(state => state.bet)
+  const winningCard = useSelector(state => state.winningCard)
 
   const cardImage = "https://deckofcardsapi.com/static/img/";
 
@@ -61,6 +62,8 @@ function Game ({messages, setMessages}){
   const updateAllPlayers = (players) => {
     dispatch(setAllPlayers(players))
   }
+  
+  const cardRanks = ['A', 'K', 'Q', 'J', '0', '9', '8', '7', '6', '5', '4', '3', '2']
 
   const resetGameState = (deck) => {
     cardRef.current = []
@@ -69,7 +72,20 @@ function Game ({messages, setMessages}){
     dispatch(setSelectedCard(false))
     dispatch(resetBet())
     setBetPlaced(false)
+    determineWinningCard(deck)
   }  
+
+  const determineWinningCard = (deck) => {
+    const indexArray = [
+      cardRanks.indexOf(deck[0][0]), cardRanks.indexOf(deck[1][0]), cardRanks.indexOf(deck[2][0]), cardRanks.indexOf(deck[3][0]), cardRanks.indexOf(deck[4][0]), cardRanks.indexOf(deck[5][0])
+    ]
+    // console.log(indexArray);
+    const bestRank = Math.min(...indexArray)
+    // console.log(bestRank);
+    const winningIndex = indexArray.lastIndexOf(bestRank);
+    // console.log(winningIndex);
+    dispatch(setWinningCard(winningIndex))
+  }
 
   const revealNextCard = () => {
     if(cardRef.current[4]===true){
@@ -100,6 +116,7 @@ function Game ({messages, setMessages}){
     else {
       dispatch(revealCard1(true))
       cardRef.current.push(true)
+      // dispatch(setWinningCard(0))
       return
     }
   }
@@ -181,6 +198,11 @@ function Game ({messages, setMessages}){
     listener.payout(["lose", "lose", "lose", "lose", "lose", "lose"])
   }
 
+  const outcometest = () => {
+    console.log("outcomes");
+    // listener.payout([])
+  }
+
   const updateUser = (updatedUser) => {
     if (updatedUser.username === user.username){dispatch(setUser(updatedUser))}
   }
@@ -249,6 +271,7 @@ function Game ({messages, setMessages}){
         <button onClick={playBet}>Place Bet</button>
         <button onClick={wintest}>Win</button>
         <button onClick={losetest}>Lose</button>
+        <button onClick={outcometest}>Outcome</button>
       </div>
       <div className="below-play">
         Total players: {players.length}<br/>

@@ -115,3 +115,16 @@ export const resetBet = () => {
     type: 'RESETBET'
   }
 }
+
+export const setWinningCard = (cardIndex) => {
+  return {
+    type: 'SETWINNINGCARD',
+    payload: cardIndex
+  }
+}
+
+export const resetWinningCard = () => {
+  return {
+    type: 'RESETWINNINGCARD'
+  }
+}
