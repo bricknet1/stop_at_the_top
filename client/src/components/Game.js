@@ -200,7 +200,12 @@ function Game ({messages, setMessages}){
 
   const outcometest = () => {
     console.log("outcomes");
-    // listener.payout([])
+    let outcomes = []
+    // console.log(markers[winningCard].includes(players[0]['username']));
+    // players.forEach(player => {console.log(markers[winningCard].includes(player['username']))})
+    players.forEach(player => {outcomes.push(markers[winningCard].includes(player['username']))})
+    console.log(outcomes);
+    // listener.payout([outcomes])
   }
 
   const updateUser = (updatedUser) => {
