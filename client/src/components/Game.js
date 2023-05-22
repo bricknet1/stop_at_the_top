@@ -18,7 +18,7 @@ function Game ({messages, setMessages}){
   const [betPlaced, setBetPlaced] = useState(false);
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers)}
+    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -176,6 +176,10 @@ function Game ({messages, setMessages}){
 
   const losetest = () => {
     listener.payout(["lose", "lose", "lose", "lose", "lose", "lose"])
+  }
+
+  const updateUser = (updatedUser) => {
+    if (updatedUser.username === user.username){dispatch(setUser(updatedUser))}
   }
 
   return (

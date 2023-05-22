@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 export class SocketListener {
   
-  constructor(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers) {
+  constructor(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser) {
     console.log('setting up socket');
     const socket = io('http://localhost:5555', {
       withCredentials: true
@@ -39,6 +39,10 @@ export class SocketListener {
     socket.on('setplayers', (players) => {
       console.log('setting all players');
       updateAllPlayers(players)
+    })
+
+    socket.on('setuser', (user) => {
+      updateUser(user)
     })
 
     socket.on('markerplaced', (data) => {

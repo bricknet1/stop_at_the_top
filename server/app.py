@@ -168,7 +168,7 @@ def payout(data):
         setattr(user, "chips", currentPlayers[i]["chips"])
         db.session.add(user)
         db.session.commit()
-    print(currentPlayers)
+        emit("setuser", user.to_dict(), to=table)
     tables[table]["players"] = currentPlayers
     emit("setplayers", tables[table]["players"], to=table)
 
