@@ -18,7 +18,7 @@ function Game ({messages, setMessages}){
   const [betPlaced, setBetPlaced] = useState(false);
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
+    if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -62,10 +62,13 @@ function Game ({messages, setMessages}){
     dispatch(setAllPlayers(players))
   }
 
-  const setDeckState = (deck) => {
+  const resetGameState = (deck) => {
     cardRef.current = []
     dispatch(hideAllCards())
     dispatch(setDeck(deck))
+    dispatch(setSelectedCard(false))
+    dispatch(resetBet())
+    setBetPlaced(false)
   }  
 
   const revealNextCard = () => {
@@ -111,11 +114,11 @@ function Game ({messages, setMessages}){
   //   listener.shuffleDeck()
   // }
 
-  const emitHide = ()=>{
+  const emitShuffle = ()=>{
     listener.shuffleDeck()
-    dispatch(setSelectedCard(false))
-    dispatch(resetBet())
-    setBetPlaced(false)
+    // dispatch(setSelectedCard(false))
+    // dispatch(resetBet())
+    // setBetPlaced(false)
   }
 
   const playMarker = () => {
@@ -239,7 +242,7 @@ function Game ({messages, setMessages}){
         <div className="player" id="player6">{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
         <button onClick={handleSendMessage}>MESSAGE</button>
         <button onClick={emitReveal}>REVEAL CARD</button>
-        <button onClick={emitHide}>RESET GAME</button>
+        <button onClick={emitShuffle}>RESET GAME</button>
         <button onClick={playMarker}>PLACE MARKER</button>
         <button onClick={bet10}>Add 10</button>
         <button onClick={bet100}>Add 100</button>

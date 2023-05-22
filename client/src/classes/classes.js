@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 
 export class SocketListener {
   
-  constructor(setAllMessages, setDeckState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser) {
+  constructor(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser) {
     console.log('setting up socket');
     const socket = io('http://localhost:5555', {
       withCredentials: true
@@ -26,7 +26,7 @@ export class SocketListener {
 
     socket.on('shuffle', (deck) => {
       console.log("setting deck state");
-      setDeckState(deck)
+      resetGameState(deck)
     });
 
     socket.on('reveal', revealNextCard.bind(this))
