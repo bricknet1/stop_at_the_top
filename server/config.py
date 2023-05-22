@@ -21,8 +21,8 @@ app = Flask(
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 bcrypt = Bcrypt(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_COOKIE_SAMESITE']='Strict'
 app.json.compact = False
