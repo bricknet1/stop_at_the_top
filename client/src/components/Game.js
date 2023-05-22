@@ -200,12 +200,14 @@ function Game ({messages, setMessages}){
 
   const outcometest = () => {
     console.log("outcomes");
-    let outcomes = []
+    let outcomesBool = []
     // console.log(markers[winningCard].includes(players[0]['username']));
     // players.forEach(player => {console.log(markers[winningCard].includes(player['username']))})
-    players.forEach(player => {outcomes.push(markers[winningCard].includes(player['username']))})
+    players.forEach(player => {outcomesBool.push(markers[winningCard].includes(player['username']))})
+    console.log(outcomesBool);
+    const outcomes = outcomesBool.map(bool => bool ? (winningCard != 5 ? "win" : "superwin") : "lose")
     console.log(outcomes);
-    // listener.payout([outcomes])
+    listener.payout(outcomes)
   }
 
   const updateUser = (updatedUser) => {
