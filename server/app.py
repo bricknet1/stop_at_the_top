@@ -88,7 +88,13 @@ def placebet(data):
     chips = data["chips"]
     bet = data["bet"]
     currentPlayers = tables[table]["players"]
-    updatedPlayers = [{"username":username, "chips":chips, "bet":bet} for player in currentPlayers if player.get("username") == username]
+    updatedPlayers = [
+        {"username": player.get("username"), "chips": player.get("chips"), "bet": player.get("bet")}
+        if player.get("username") != username
+        else {"username": username, "chips": chips, "bet": bet}
+        for player in currentPlayers
+    ]
+    print(updatedPlayers)
     tables[table]["players"] = updatedPlayers
     emit("setplayers", tables[table]["players"], to=table)
 
@@ -153,13 +159,15 @@ def payout(data):
     table = session.get("table")
     currentPlayers = tables[table]["players"]
     for i in range(len(currentPlayers)):
-        print(currentPlayers[i])
         if data[i] == "win":
             currentPlayers[i]["chips"] = currentPlayers[i]["chips"]+(2*(currentPlayers[i]["bet"]))
         if data[i] == "superwin":
             currentPlayers[i]["chips"] = currentPlayers[i]["chips"]+(3*(currentPlayers[i]["bet"]))
         currentPlayers[i]["bet"] = 0
-        print(currentPlayers[i])
+        user = User.query.filter_by(username=currentPlayers[i]["username"]).first()
+        setattr(user, "chips", currentPlayers[i]["chips"])
+        db.session.add(user)
+        db.session.commit()
     print(currentPlayers)
     tables[table]["players"] = currentPlayers
     emit("setplayers", tables[table]["players"], to=table)
