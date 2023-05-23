@@ -19,6 +19,7 @@ function Game ({messages, setMessages}){
 
   useEffect(()=>{
     if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
+    // eslint-disable-next-line
   },[])
 
   const card1revealed = useSelector(state => state.card1)
@@ -205,7 +206,7 @@ function Game ({messages, setMessages}){
     // players.forEach(player => {console.log(markers[winningCard].includes(player['username']))})
     players.forEach(player => {outcomesBool.push(markers[winningCard].includes(player['username']))})
     console.log(outcomesBool);
-    const outcomes = outcomesBool.map(bool => bool ? (winningCard != 5 ? "win" : "superwin") : "lose")
+    const outcomes = outcomesBool.map(bool => bool ? (winningCard !== 5 ? "win" : "superwin") : "lose")
     console.log(outcomes);
     listener.payout(outcomes)
   }

@@ -1,6 +1,6 @@
 
-import { Route, Link, Routes, useNavigate } from 'react-router-dom';
-import { useState, useEffect, useCallback, createContext } from 'react';
+import { Route, Routes, useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
 import {useSelector, useDispatch} from 'react-redux';
 
 // import { SocketListener } from './classes/classes.js';
@@ -27,6 +27,7 @@ function App() {
   //   listener = new SocketListener(messages, setMessages)
   // },[])
 
+  // eslint-disable-next-line
   const userFetch = useCallback(fetchUser, [navigate]);
 
   useEffect(() => {
