@@ -19,7 +19,7 @@ app = Flask(
     template_folder='../client/build'
 )
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8000"}}, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "https://stopatthetop.onrender.com"}}, supports_credentials=True)
 bcrypt = Bcrypt(app)
 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
