@@ -12,8 +12,8 @@ export class SocketListener {
     updateUser
   ) {
     console.log("setting up socket");
-    // const socket = io('http://localhost:5555', {
-    const socket = io("https://stopatthetop.onrender.com", {
+    // const socket = io('ws://localhost:5555', {
+    const socket = io("wss://stopatthetop.onrender.com", {
       withCredentials: true,
     });
     // const socket = new this.socket('localhost.......')
