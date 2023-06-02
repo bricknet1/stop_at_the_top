@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-import logging
-hdlr = logging.FileHandler('log.log')
-formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
-hdlr.setFormatter(formatter)
-
 from dotenv import load_dotenv
 load_dotenv()
 import os
@@ -23,8 +18,6 @@ app = Flask(
     static_folder='../client/build',
     template_folder='../client/build'
 )
-app.debug=True
-app.logger.addHandler(hdlr) 
 # CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 CORS(app, resources={r"/*": {"origins": "https://stopatthetop.onrender.com"}}, supports_credentials=True)
 bcrypt = Bcrypt(app)
