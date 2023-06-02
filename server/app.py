@@ -11,10 +11,13 @@ from flask_socketio import join_room, leave_room, send, SocketIO, emit
 import random
 from string import ascii_uppercase
 
+import eventlet
+eventlet.monkey_patch()
+
 from models import User
 from config import app, db, api
 
-socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
+socketio = SocketIO(app, async_mode='eventlet', cors_allowed_origins="*", manage_session=False)
 
 tables = {}
 
@@ -248,5 +251,6 @@ class Users(Resource):
 api.add_resource(Users, '/users/<int:id>')
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
+    # app.run(port=5555, debug=True)
+    eventlet.wsgi.server(eventlet.listen(('', 5555)), app)
     socketio.run(app, debug=True)
