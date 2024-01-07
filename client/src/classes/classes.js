@@ -13,9 +13,9 @@ export class SocketListener {
   ) {
     console.log("setting up socket");
     // uncomment next for local
-    const socket = io("ws://localhost:5555", {
+    // const socket = io("ws://localhost:5555", {
       // uncomment next for deploy
-      // const socket = io("wss://stopatthetop.onrender.com", {
+      const socket = io("wss://stopatthetop.onrender.com", {
       withCredentials: true,
     });
     // const socket = new this.socket('localhost.......')
