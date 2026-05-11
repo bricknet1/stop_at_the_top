@@ -284,3 +284,74 @@
   width: 800px;
   top: 280px;
 }
+
+.bet-controls {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 2;
+}
+
+.bet-controls-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.4rem;
+}
+
+.bet-controls-row button {
+  flex: 1;
+  min-width: 6.5rem;
+}
+
+.bet-controls-staging {
+  margin: 0;
+  padding: 0.15rem 0 0.1rem;
+  text-align: center;
+  width: 100%;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: #f5f5dc;
+}
+
+.bet-controls-staging-label {
+  display: block;
+  letter-spacing: 0.02em;
+}
+
+.bet-controls-staging-value {
+  display: block;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffeb3b;
+}
+
+.bet-controls-place {
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 0.5rem 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 2px solid #0a3d0a;
+  border-radius: 4px;
+  background: #ffd700;
+  color: #063806;
+}
+
+.bet-controls-place:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.bet-controls-place--placed,
+.bet-controls-place--placed:disabled {
+  cursor: default;
+  background: #063806;
+  color: #ffd700;
+  border-color: #ffd700;
+  opacity: 1;
+}

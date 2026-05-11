@@ -16,6 +16,8 @@ function Game ({messages, setMessages}){
   const cardRef = useRef([]);
 
   const [betPlaced, setBetPlaced] = useState(false);
+  /** Amount committed to the server when Place Bet succeeds; drives "Current Bet:" after placement. */
+  const [officialBet, setOfficialBet] = useState(0);
 
   useEffect(()=>{
     if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
@@ -73,6 +75,7 @@ function Game ({messages, setMessages}){
     dispatch(setSelectedCard(false))
     dispatch(resetBet())
     setBetPlaced(false)
+    setOfficialBet(0)
     determineWinningCard(deck)
   }  
 
@@ -171,24 +174,39 @@ function Game ({messages, setMessages}){
     if(betPlaced===false){dispatch(updateBet(100))}
   }
 
+  const betMinus10 = () => {
+    if(betPlaced===false){dispatch(updateBet(-10))}
+  }
+
+  const betMinus100 = () => {
+    if(betPlaced===false){dispatch(updateBet(-100))}
+  }
+
   const playBet = () => {
-    const values = {'chips':user['chips']-bet}
-    if(betPlaced===false){fetch(`/users/${user['id']}`, {
+    if (betPlaced) return
+    const stake = bet
+    const values = { chips: user.chips - stake }
+    fetch(`/users/${user.id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(values)
     })
-    .then(res => {
-      if (res.ok) {
-        res.json().then(data => {
-          dispatch(setUser(data));
-          setBetPlaced(true);
-          listener.placeBet({"username":user.username, "chips":user['chips']-bet, "bet":bet})
-        })
-      }
-    })}
+      .then((res) => {
+        if (res.ok) {
+          res.json().then((data) => {
+            dispatch(setUser(data))
+            setOfficialBet(stake)
+            setBetPlaced(true)
+            listener.placeBet({
+              username: user.username,
+              chips: user.chips - stake,
+              bet: stake
+            })
+          })
+        }
+      })
   }
 
   const wintest = () => {
@@ -290,8 +308,32 @@ function Game ({messages, setMessages}){
           </>
         )}
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
+        <div className="bet-controls" aria-label="Betting controls">
+          <div className="bet-controls-row">
+            <button type="button" onClick={bet10}>+10</button>
+            <button type="button" onClick={betMinus10}>-10</button>
+          </div>
+          <div className="bet-controls-row">
+            <button type="button" onClick={bet100}>+100</button>
+            <button type="button" onClick={betMinus100}>-100</button>
+          </div>
+          {!betPlaced && (
+            <p className="bet-controls-staging" aria-live="polite">
+              <span className="bet-controls-staging-label">Your stake</span>
+              <span className="bet-controls-staging-value">{bet}</span>
+            </p>
+          )}
+          <button
+            type="button"
+            className={`bet-controls-place${betPlaced ? ' bet-controls-place--placed' : ''}`}
+            onClick={playBet}
+            disabled={betPlaced}
+          >
+            {betPlaced ? 'BET PLACED' : 'Place Bet'}
+          </button>
+        </div>
         <p className="tableID">Table: {tableID}</p>
-        <p className="bet">Current Bet: {bet}</p>
+        <p className="bet">Current Bet: {betPlaced ? officialBet : '—'}</p>
         <div className="player" id="player1"><br/><br/>{players[0]?.username}<br/>Chips: {players[0]?.chips}<br/>Bet: {players[0]?.bet}</div>
         <div className="player" id="player2"><br/><br/>{players[1]?.username}<br/>Chips: {players[1]?.chips}<br/>Bet: {players[1]?.bet}</div>
         <div className="player" id="player3"><br/><br/>{players[2]?.username}<br/>Chips: {players[2]?.chips}<br/>Bet: {players[2]?.bet}</div>
@@ -302,9 +344,6 @@ function Game ({messages, setMessages}){
         <button onClick={emitReveal}>REVEAL CARD</button>
         <button onClick={emitShuffle}>RESET GAME</button>
         <button onClick={playMarker}>PLACE MARKER</button>
-        <button onClick={bet10}>Add 10</button>
-        <button onClick={bet100}>Add 100</button>
-        <button onClick={playBet}>Place Bet</button>
         <button onClick={wintest}>Win</button>
         <button onClick={losetest}>Lose</button>
         <button onClick={outcometest}>Outcome</button>
