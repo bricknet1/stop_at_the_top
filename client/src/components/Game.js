@@ -142,13 +142,68 @@ function Game ({messages, setMessages}){
     // setBetPlaced(false)
   }
 
+  const revealedForMarker = [
+    card1revealed,
+    card2revealed,
+    card3revealed,
+    card4revealed,
+    card5revealed,
+    card6revealed
+  ]
+  const nextUnrevealedIndex = revealedForMarker.findIndex((x) => x === false)
+  const markerTargetIndex =
+    nextUnrevealedIndex === -1
+      ? 5
+      : nextUnrevealedIndex === 0
+        ? 5
+        : nextUnrevealedIndex - 1
+
+  const markerOrdinalLabels = [
+    'First',
+    'Second',
+    'Third',
+    'Fourth'
+  ]
+
+  const markerButtonLabel = () => {
+    if (!betPlaced) return 'Place marker'
+    if (selectedCard !== false || card6revealed) return 'Marker Placed'
+    if (markerTargetIndex === 4) {
+      return (
+        <>
+          Last Chance to
+          <br />
+          Place Marker!
+        </>
+      )
+    }
+    if (markerTargetIndex === 5) {
+      return (
+        <>
+          Place marker on
+          <br />
+          Super Card!
+        </>
+      )
+    }
+    return (
+      <>
+        Place marker on
+        <br />
+        {markerOrdinalLabels[markerTargetIndex]} Card
+      </>
+    )
+  }
+
+  const canPlaceMarker =
+    betPlaced && selectedCard === false && card6revealed === false
+
   const playMarker = () => {
-    const revealedCards = [card1revealed, card2revealed, card3revealed, card4revealed, card5revealed, card6revealed]
-    const currentCard = ((revealedCards.findIndex(x => x===false))-1)<0?5:(revealedCards.findIndex(x => x===false))-1
-    console.log('the current card is index '+currentCard);
-    if (selectedCard===false && card6revealed===false){
-      dispatch(setSelectedCard(currentCard))
-      listener.placeMarker({"username":user.username, "index":currentCard})
+    if (!betPlaced) return
+    console.log('the current card is index ' + markerTargetIndex)
+    if (selectedCard === false && card6revealed === false) {
+      dispatch(setSelectedCard(markerTargetIndex))
+      listener.placeMarker({ username: user.username, index: markerTargetIndex })
     }
   }
 
@@ -365,6 +420,22 @@ function Game ({messages, setMessages}){
             {betPlaced ? 'BET PLACED' : 'Place Bet'}
           </button>
         </div>
+        <div className="marker-controls" aria-label="Marker controls">
+          <button
+            type="button"
+            className={`marker-controls-place${
+              !betPlaced
+                ? ' marker-controls-place--inactive'
+                : canPlaceMarker
+                  ? ''
+                  : ' marker-controls-place--done'
+            }`}
+            onClick={playMarker}
+            disabled={!canPlaceMarker}
+          >
+            {markerButtonLabel()}
+          </button>
+        </div>
         <p className="tableID">Table: {tableID}</p>
         <p className="bet">Current Bet: {betPlaced ? officialBet : '—'}</p>
         <div className={playerFrameClassName(0)} id="player1">
@@ -388,7 +459,6 @@ function Game ({messages, setMessages}){
         <button onClick={handleSendMessage}>MESSAGE</button>
         <button onClick={emitReveal}>REVEAL CARD</button>
         <button onClick={emitShuffle}>RESET GAME</button>
-        <button onClick={playMarker}>PLACE MARKER</button>
         {/* <button onClick={wintest}>All Win</button>
         <button onClick={losetest}>All Lose</button> */}
         <button onClick={outcometest}>Outcome</button>

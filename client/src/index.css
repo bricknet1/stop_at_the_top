@@ -456,3 +456,53 @@
   border-color: #ffd700;
   opacity: 1;
 }
+
+.marker-controls {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+  width: 11.5rem;
+  max-width: calc(100% - 40px);
+}
+
+.marker-controls-place {
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 0.5rem 0.45rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+  border: 2px solid #0a3d0a;
+  border-radius: 4px;
+  background: #ffd700;
+  color: #063806;
+}
+
+.marker-controls-place:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.marker-controls-place--inactive,
+.marker-controls-place--inactive:disabled {
+  cursor: not-allowed;
+  background: #063806;
+  color: #ffd700;
+  border-color: #ffd700;
+  opacity: 0.9;
+}
+
+.marker-controls-place--done,
+.marker-controls-place--done:disabled {
+  cursor: default;
+  background: #063806;
+  color: #ffd700;
+  border-color: #ffd700;
+  opacity: 1;
+}
