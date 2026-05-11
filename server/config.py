@@ -30,7 +30,13 @@ IS_DEPLOY = os.environ.get('RENDER') is not None
 
 if IS_DEPLOY:
     CORS(app, resources={r"/*": {"origins": "https://stopatthetop.onrender.com"}}, supports_credentials=True)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+    # Prefer DATABASE_URL (Render injects it when Postgres is linked); DATABASE_URI for manual config.
+    db_uri = os.environ.get('DATABASE_URL') or os.environ.get('DATABASE_URI')
+    if not db_uri:
+        raise RuntimeError(
+            "Deploy mode requires DATABASE_URL or DATABASE_URI (PostgreSQL connection string)."
+        )
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
 else:
     CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
