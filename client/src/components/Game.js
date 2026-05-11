@@ -156,10 +156,21 @@ function Game ({messages, setMessages}){
     dispatch(setMarkers(data))
   }
 
+  /** Seat index 0–5 matches player order; drives seat + marker color. */
+  const seatIndexForUsername = (username) => {
+    if (!username) return 0
+    const idx = players.findIndex((p) => p && p.username === username)
+    return idx === -1 ? 0 : idx
+  }
+
   const markersDiv = (cardIndex) => {
     return markers[cardIndex].map((username, i) => {
+      const seat = seatIndexForUsername(username)
       return (
-        <div className={`marker${i}`} key={i}>
+        <div
+          className={`marker marker-pos-${i} marker-seat-${seat}`}
+          key={`${cardIndex}-${username}`}
+        >
           {username[0]}
         </div>
       )
@@ -242,6 +253,28 @@ function Game ({messages, setMessages}){
     players[0].username === user.username
   const showAwaitingSyncedGame =
     firstCardIsPlaceholder && players.length > 0 && Boolean(user?.username)
+
+  const playerFrameClassName = (seatIndex) => {
+    const parts = ['player-frame']
+    if (
+      user?.username &&
+      players[seatIndex]?.username === user.username
+    ) {
+      parts.push('player-frame--current')
+    }
+    return parts.join(' ')
+  }
+
+  const playerPanelClassName = (seatIndex) => {
+    const parts = ['player', `player-seat-${seatIndex}`]
+    if (
+      user?.username &&
+      players[seatIndex]?.username === user.username
+    ) {
+      parts.push('player--current')
+    }
+    return parts.join(' ')
+  }
 
   return (
     <>
@@ -334,12 +367,24 @@ function Game ({messages, setMessages}){
         </div>
         <p className="tableID">Table: {tableID}</p>
         <p className="bet">Current Bet: {betPlaced ? officialBet : '—'}</p>
-        <div className="player" id="player1"><br/><br/>{players[0]?.username}<br/>Chips: {players[0]?.chips}<br/>Bet: {players[0]?.bet}</div>
-        <div className="player" id="player2"><br/><br/>{players[1]?.username}<br/>Chips: {players[1]?.chips}<br/>Bet: {players[1]?.bet}</div>
-        <div className="player" id="player3"><br/><br/>{players[2]?.username}<br/>Chips: {players[2]?.chips}<br/>Bet: {players[2]?.bet}</div>
-        <div className="player" id="player4"><br/><br/>{players[3]?.username}<br/>Chips: {players[3]?.chips}<br/>Bet: {players[3]?.bet}</div>
-        <div className="player" id="player5"><br/><br/>{players[4]?.username}<br/>Chips: {players[4]?.chips}<br/>Bet: {players[4]?.bet}</div>
-        <div className="player" id="player6"><br/><br/>{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
+        <div className={playerFrameClassName(0)} id="player1">
+          <div className={playerPanelClassName(0)}><br/><br/>{players[0]?.username}<br/>Chips: {players[0]?.chips}<br/>Bet: {players[0]?.bet}</div>
+        </div>
+        <div className={playerFrameClassName(1)} id="player2">
+          <div className={playerPanelClassName(1)}><br/><br/>{players[1]?.username}<br/>Chips: {players[1]?.chips}<br/>Bet: {players[1]?.bet}</div>
+        </div>
+        <div className={playerFrameClassName(2)} id="player3">
+          <div className={playerPanelClassName(2)}><br/><br/>{players[2]?.username}<br/>Chips: {players[2]?.chips}<br/>Bet: {players[2]?.bet}</div>
+        </div>
+        <div className={playerFrameClassName(3)} id="player4">
+          <div className={playerPanelClassName(3)}><br/><br/>{players[3]?.username}<br/>Chips: {players[3]?.chips}<br/>Bet: {players[3]?.bet}</div>
+        </div>
+        <div className={playerFrameClassName(4)} id="player5">
+          <div className={playerPanelClassName(4)}><br/><br/>{players[4]?.username}<br/>Chips: {players[4]?.chips}<br/>Bet: {players[4]?.bet}</div>
+        </div>
+        <div className={playerFrameClassName(5)} id="player6">
+          <div className={playerPanelClassName(5)}><br/><br/>{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
+        </div>
         <button onClick={handleSendMessage}>MESSAGE</button>
         <button onClick={emitReveal}>REVEAL CARD</button>
         <button onClick={emitShuffle}>RESET GAME</button>
