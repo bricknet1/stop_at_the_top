@@ -549,9 +549,7 @@ function Game ({messages, setMessages}){
           <div className={playerPanelClassName(5)}><br/><br/>{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
         </div>
         <button onClick={handleSendMessage}>MESSAGE</button>
-        {(!isPlayer1 || !showP1RevealOverlay) && (
-          <button type="button" onClick={emitReveal}>REVEAL CARD</button>
-        )}
+        {/* <button type="button" onClick={emitReveal}>REVEAL CARD</button> */}
         <button onClick={emitShuffle}>RESET GAME</button>
         {/* <button onClick={wintest}>All Win</button>
         <button onClick={losetest}>All Lose</button> */}
