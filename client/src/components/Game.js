@@ -264,12 +264,12 @@ function Game ({messages, setMessages}){
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>
         <p className="bet">Current Bet: {bet}</p>
-        <div className="player" id="player1">{players[0]?.username}<br/>Chips: {players[0]?.chips}<br/>Bet: {players[0]?.bet}</div>
-        <div className="player" id="player2">{players[1]?.username}<br/>Chips: {players[1]?.chips}<br/>Bet: {players[1]?.bet}</div>
-        <div className="player" id="player3">{players[2]?.username}<br/>Chips: {players[2]?.chips}<br/>Bet: {players[2]?.bet}</div>
-        <div className="player" id="player4">{players[3]?.username}<br/>Chips: {players[3]?.chips}<br/>Bet: {players[3]?.bet}</div>
-        <div className="player" id="player5">{players[4]?.username}<br/>Chips: {players[4]?.chips}<br/>Bet: {players[4]?.bet}</div>
-        <div className="player" id="player6">{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
+        <div className="player" id="player1"><br/><br/>{players[0]?.username}<br/>Chips: {players[0]?.chips}<br/>Bet: {players[0]?.bet}</div>
+        <div className="player" id="player2"><br/><br/>{players[1]?.username}<br/>Chips: {players[1]?.chips}<br/>Bet: {players[1]?.bet}</div>
+        <div className="player" id="player3"><br/><br/>{players[2]?.username}<br/>Chips: {players[2]?.chips}<br/>Bet: {players[2]?.bet}</div>
+        <div className="player" id="player4"><br/><br/>{players[3]?.username}<br/>Chips: {players[3]?.chips}<br/>Bet: {players[3]?.bet}</div>
+        <div className="player" id="player5"><br/><br/>{players[4]?.username}<br/>Chips: {players[4]?.chips}<br/>Bet: {players[4]?.bet}</div>
+        <div className="player" id="player6"><br/><br/>{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
         <button onClick={handleSendMessage}>MESSAGE</button>
         <button onClick={emitReveal}>REVEAL CARD</button>
         <button onClick={emitShuffle}>RESET GAME</button>

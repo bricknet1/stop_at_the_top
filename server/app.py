@@ -274,6 +274,27 @@ class UsersList(Resource):
         return make_response([user.to_dict() for user in users], 200)
 api.add_resource(UsersList, '/users')
 
+class TablesList(Resource):
+    def get(self):
+        _require_admin_token()
+        payload = []
+        for code, state in tables.items():
+            payload.append({
+                "table": code,
+                "playercount": state.get("playercount", 0),
+                "players": [
+                    {
+                        "username": p.get("username"),
+                        "chips": p.get("chips"),
+                        "bet": p.get("bet"),
+                    }
+                    for p in state.get("players", [])
+                ],
+            })
+        return make_response({"tables": payload}, 200)
+
+api.add_resource(TablesList, '/tables')
+
 class Users(Resource):
     def get(self, id):
         _require_admin_token()
