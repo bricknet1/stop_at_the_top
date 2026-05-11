@@ -38,6 +38,10 @@ function Game ({messages, setMessages}){
   const bet = useSelector(state => state.bet)
   const winningCard = useSelector(state => state.winningCard)
 
+  // Placeholder deck uses "111" for the first slot; real cards never do. Catches
+  // fresh tables and late joiners who never received shuffle/reveal state.
+  const firstCardIsPlaceholder = deck[0] === '111'
+
   const cardImage = "https://deckofcardsapi.com/static/img/";
 
   const{tableID} = useParams();
@@ -166,7 +170,7 @@ function Game ({messages, setMessages}){
   ]
 
   const markerButtonLabel = () => {
-    if (!betPlaced) return 'Place marker'
+    if (!betPlaced) return '← Place Your Bet First'
     if (selectedCard !== false || card6revealed) return 'Marker Placed'
     if (markerTargetIndex === 4) {
       return (
@@ -199,6 +203,7 @@ function Game ({messages, setMessages}){
     betPlaced && selectedCard === false && card6revealed === false
 
   const playMarker = () => {
+    if (firstCardIsPlaceholder) return
     if (!betPlaced) return
     console.log('the current card is index ' + markerTargetIndex)
     if (selectedCard === false && card6revealed === false) {
@@ -233,22 +238,27 @@ function Game ({messages, setMessages}){
   }
 
   const bet10 = () => {
-    if(betPlaced===false){dispatch(updateBet(10))}
+    if (firstCardIsPlaceholder) return
+    if (betPlaced === false) dispatch(updateBet(10))
   }
 
   const bet100 = () => {
-    if(betPlaced===false){dispatch(updateBet(100))}
+    if (firstCardIsPlaceholder) return
+    if (betPlaced === false) dispatch(updateBet(100))
   }
 
   const betMinus10 = () => {
-    if(betPlaced===false){dispatch(updateBet(-10))}
+    if (firstCardIsPlaceholder) return
+    if (betPlaced === false) dispatch(updateBet(-10))
   }
 
   const betMinus100 = () => {
-    if(betPlaced===false){dispatch(updateBet(-100))}
+    if (firstCardIsPlaceholder) return
+    if (betPlaced === false) dispatch(updateBet(-100))
   }
 
   const playBet = () => {
+    if (firstCardIsPlaceholder) return
     if (betPlaced) return
     const stake = bet
     const values = { chips: user.chips - stake }
@@ -299,9 +309,6 @@ function Game ({messages, setMessages}){
     if (updatedUser.username === user.username){dispatch(setUser(updatedUser))}
   }
 
-  // Placeholder deck uses "111" for the first slot; real cards never do. Catches
-  // fresh tables and late joiners who never received shuffle/reveal state.
-  const firstCardIsPlaceholder = deck[0] === "111"
   const isPlayer1 =
     Boolean(user?.username) &&
     Boolean(players[0]?.username) &&
@@ -396,46 +403,50 @@ function Game ({messages, setMessages}){
           </>
         )}
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
-        <div className="bet-controls" aria-label="Betting controls">
-          <div className="bet-controls-row">
-            <button type="button" onClick={bet10}>+10</button>
-            <button type="button" onClick={betMinus10}>-10</button>
+        {!firstCardIsPlaceholder && (
+          <div className="bet-controls" aria-label="Betting controls">
+            <div className="bet-controls-row">
+              <button type="button" onClick={bet10}>+10</button>
+              <button type="button" onClick={betMinus10}>-10</button>
+            </div>
+            <div className="bet-controls-row">
+              <button type="button" onClick={bet100}>+100</button>
+              <button type="button" onClick={betMinus100}>-100</button>
+            </div>
+            {!betPlaced && (
+              <p className="bet-controls-staging" aria-live="polite">
+                <span className="bet-controls-staging-label">Your stake</span>
+                <span className="bet-controls-staging-value">{bet}</span>
+              </p>
+            )}
+            <button
+              type="button"
+              className={`bet-controls-place${betPlaced ? ' bet-controls-place--placed' : ''}`}
+              onClick={playBet}
+              disabled={betPlaced}
+            >
+              {betPlaced ? 'BET PLACED' : 'Place Bet'}
+            </button>
           </div>
-          <div className="bet-controls-row">
-            <button type="button" onClick={bet100}>+100</button>
-            <button type="button" onClick={betMinus100}>-100</button>
+        )}
+        {!firstCardIsPlaceholder && (
+          <div className="marker-controls" aria-label="Marker controls">
+            <button
+              type="button"
+              className={`marker-controls-place${
+                !betPlaced
+                  ? ' marker-controls-place--inactive'
+                  : canPlaceMarker
+                    ? ''
+                    : ' marker-controls-place--done'
+              }`}
+              onClick={playMarker}
+              disabled={!canPlaceMarker}
+            >
+              {markerButtonLabel()}
+            </button>
           </div>
-          {!betPlaced && (
-            <p className="bet-controls-staging" aria-live="polite">
-              <span className="bet-controls-staging-label">Your stake</span>
-              <span className="bet-controls-staging-value">{bet}</span>
-            </p>
-          )}
-          <button
-            type="button"
-            className={`bet-controls-place${betPlaced ? ' bet-controls-place--placed' : ''}`}
-            onClick={playBet}
-            disabled={betPlaced}
-          >
-            {betPlaced ? 'BET PLACED' : 'Place Bet'}
-          </button>
-        </div>
-        <div className="marker-controls" aria-label="Marker controls">
-          <button
-            type="button"
-            className={`marker-controls-place${
-              !betPlaced
-                ? ' marker-controls-place--inactive'
-                : canPlaceMarker
-                  ? ''
-                  : ' marker-controls-place--done'
-            }`}
-            onClick={playMarker}
-            disabled={!canPlaceMarker}
-          >
-            {markerButtonLabel()}
-          </button>
-        </div>
+        )}
         <p className="tableID">Table: {tableID}</p>
         <p className="bet">Current Bet: {betPlaced ? officialBet : '—'}</p>
         <div className={playerFrameClassName(0)} id="player1">
