@@ -220,13 +220,13 @@ function Game ({messages, setMessages}){
       })
   }
 
-  const wintest = () => {
-    listener.payout(["win", "win", "win", "win", "win", "win"])
-  }
+  // const wintest = () => {
+  //   listener.payout(["win", "win", "win", "win", "win", "win"])
+  // }
 
-  const losetest = () => {
-    listener.payout(["lose", "lose", "lose", "lose", "lose", "lose"])
-  }
+  // const losetest = () => {
+  //   listener.payout(["lose", "lose", "lose", "lose", "lose", "lose"])
+  // }
 
   const outcometest = () => {
     console.log("outcomes");
@@ -389,8 +389,8 @@ function Game ({messages, setMessages}){
         <button onClick={emitReveal}>REVEAL CARD</button>
         <button onClick={emitShuffle}>RESET GAME</button>
         <button onClick={playMarker}>PLACE MARKER</button>
-        <button onClick={wintest}>Win</button>
-        <button onClick={losetest}>Lose</button>
+        {/* <button onClick={wintest}>All Win</button>
+        <button onClick={losetest}>All Lose</button> */}
         <button onClick={outcometest}>Outcome</button>
       </div>
       <div className="below-play">
