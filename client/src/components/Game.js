@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, updateBet, resetBet, setUser, setWinningCard} from '../actions';
+import {revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, setMarkerPasses, updateBet, resetBet, setUser, setWinningCard} from '../actions';
 
 let listener
 
@@ -21,7 +21,7 @@ function Game ({messages, setMessages}){
   const [markerPassed, setMarkerPassed] = useState(false);
 
   useEffect(()=>{
-    if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
+    if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateMarkerPasses, updateUser)}
     // eslint-disable-next-line
   },[])
 
@@ -36,6 +36,7 @@ function Game ({messages, setMessages}){
   const selectedCard = useSelector(state => state.selectedCard)
   const user = useSelector(state => state.user)
   const markers = useSelector(state => state.markers)
+  const markerPasses = useSelector(state => state.markerPasses)
   const bet = useSelector(state => state.bet)
   const winningCard = useSelector(state => state.winningCard)
 
@@ -82,6 +83,7 @@ function Game ({messages, setMessages}){
     setBetPlaced(false)
     setOfficialBet(0)
     setMarkerPassed(false)
+    dispatch(setMarkerPasses([]))
     determineWinningCard(deck)
   }  
 
@@ -215,6 +217,7 @@ function Game ({messages, setMessages}){
   const handlePassMarker = () => {
     if (firstCardIsPlaceholder || !showPassButton) return
     setMarkerPassed(true)
+    listener.markerPass({ username: user.username })
   }
 
   const playMarker = () => {
@@ -229,6 +232,10 @@ function Game ({messages, setMessages}){
 
   const updateMarkers = (data) => {
     dispatch(setMarkers(data))
+  }
+
+  const updateMarkerPasses = (passes) => {
+    dispatch(setMarkerPasses(Array.isArray(passes) ? passes : []))
   }
 
   /** Seat index 0–5 matches player order; drives seat + marker color. */
@@ -328,6 +335,30 @@ function Game ({messages, setMessages}){
     Boolean(user?.username) &&
     Boolean(players[0]?.username) &&
     players[0].username === user.username
+
+  const usernameOnAnyMarker = (username) => {
+    if (!username) return false
+    for (let i = 0; i < 6; i++) {
+      if (markers[i].includes(username)) return true
+    }
+    return false
+  }
+
+  const bettors = players.filter((p) => p && p.bet > 0)
+  const bettorsStillNeedMarker = bettors.filter(
+    (p) => !usernameOnAnyMarker(p.username)
+  )
+  const allMarkerDecisionsIn =
+    bettors.length > 0 &&
+    (bettorsStillNeedMarker.length === 0 ||
+      bettorsStillNeedMarker.every((p) => markerPasses.includes(p.username)))
+
+  const showP1RevealOverlay =
+    isPlayer1 &&
+    allMarkerDecisionsIn &&
+    !firstCardIsPlaceholder &&
+    !card6revealed
+
   const showAwaitingSyncedGame =
     firstCardIsPlaceholder && players.length > 0 && Boolean(user?.username)
 
@@ -481,6 +512,20 @@ function Game ({messages, setMessages}){
                 )}
               </>
             )}
+            {showP1RevealOverlay && (
+              <div className="marker-controls-p1-reveal-host">
+                <p className="marker-controls-p1-reveal-host__message" aria-live="polite">
+                  All players have decided
+                </p>
+                <button
+                  type="button"
+                  className="marker-controls-p1-reveal-btn"
+                  onClick={emitReveal}
+                >
+                  Reveal Next Card
+                </button>
+              </div>
+            )}
           </div>
         )}
         <p className="tableID">Table: {tableID}</p>
@@ -504,7 +549,9 @@ function Game ({messages, setMessages}){
           <div className={playerPanelClassName(5)}><br/><br/>{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
         </div>
         <button onClick={handleSendMessage}>MESSAGE</button>
-        <button onClick={emitReveal}>REVEAL CARD</button>
+        {(!isPlayer1 || !showP1RevealOverlay) && (
+          <button type="button" onClick={emitReveal}>REVEAL CARD</button>
+        )}
         <button onClick={emitShuffle}>RESET GAME</button>
         {/* <button onClick={wintest}>All Win</button>
         <button onClick={losetest}>All Lose</button> */}

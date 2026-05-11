@@ -9,6 +9,7 @@ export class SocketListener {
     addNewPlayer,
     updateAllPlayers,
     updateMarkers,
+    updateMarkerPasses,
     updateUser
   ) {
     console.log("setting up socket");
@@ -65,6 +66,10 @@ export class SocketListener {
       updateMarkers(data);
     });
 
+    socket.on("markerpasses", (passes) => {
+      updateMarkerPasses(Array.isArray(passes) ? passes : []);
+    });
+
     this.socket = socket;
   }
 
@@ -83,6 +88,10 @@ export class SocketListener {
 
   placeMarker(data) {
     this.socket.emit("placemarker", data);
+  }
+
+  markerPass(data) {
+    this.socket.emit("markerpass", data);
   }
 
   placeBet(data) {

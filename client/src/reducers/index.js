@@ -10,6 +10,7 @@ import userReducer from "./user";
 import playersReducer from "./players";
 import selectedCardReducer from "./selectedCard";
 import markersReducer from "./markers";
+import markerPassesReducer from "./markerPasses";
 import betReducer from "./bet";
 import winningCardReducer from "./winningCard";
 
@@ -25,6 +26,7 @@ const allReducers = combineReducers({
   players: playersReducer,
   selectedCard: selectedCardReducer,
   markers: markersReducer,
+  markerPasses: markerPassesReducer,
   bet: betReducer,
   winningCard: winningCardReducer
 });

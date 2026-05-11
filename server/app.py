@@ -48,7 +48,7 @@ def table():
 
     if create != False:
         table = generate_unique_code(4)
-        tables[table] = {"playercount":0, "messages": [], 'table':table, "deck": [], "players":[], "markers":{0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}}
+        tables[table] = {"playercount":0, "messages": [], 'table':table, "deck": [], "players":[], "markers":{0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}, "marker_passes": []}
     elif table not in tables:
         return make_response({'error':"Room does not exist."}, 404)
 
@@ -85,7 +85,32 @@ def placemarker(data):
     # print("made it this far")
     tables[table]["markers"][index].append(username)
     print(tables[table]["markers"][index])
+    passes = tables[table].get("marker_passes", [])
+    if username in passes:
+        tables[table]["marker_passes"] = [u for u in passes if u != username]
     emit("markerplaced", tables[table]["markers"], to=table)
+    emit("markerpasses", list(tables[table].get("marker_passes", [])), to=table)
+
+
+def _username_on_any_marker(table_state, username):
+    markers = table_state.get("markers", {})
+    return any(username in markers.get(i, []) for i in range(6))
+
+
+@socketio.on("markerpass")
+def markerpass(data):
+    table = session.get("table")
+    if table not in tables:
+        return
+    username = (data or {}).get("username") or session.get("username")
+    if not username:
+        return
+    if _username_on_any_marker(tables[table], username):
+        return
+    passes = tables[table].setdefault("marker_passes", [])
+    if username not in passes:
+        passes.append(username)
+    emit("markerpasses", list(passes), to=table)
 
 @socketio.on("placebet")
 def placebet(data):
@@ -126,6 +151,7 @@ def connect(auth):
     print(f"{username} joined table {table}")
     # emit("newplayer", username, to=table)
     emit("setplayers", tables[table]["players"], to=table)
+    emit("markerpasses", tables[table].get("marker_passes", []))
 
 @socketio.on("disconnect")
 def disconnect():
@@ -155,7 +181,9 @@ newDeck = ["2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "0S", "JS", "QS", "KS
 def shuffle():
     table = session.get("table")
     tables[table]["markers"] = {0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}
+    tables[table]["marker_passes"] = []
     emit("markerplaced", tables[table]["markers"], to=table)
+    emit("markerpasses", [], to=table)
     random.shuffle(newDeck)
     tables[table]["deck"] = newDeck
     emit("shuffle", newDeck, to=table)
@@ -181,6 +209,10 @@ def payout(data):
 @socketio.on("reveal")
 def reveal():
     table = session.get("table")
+    if table not in tables:
+        return
+    tables[table]["marker_passes"] = []
+    emit("markerpasses", [], to=table)
     emit("reveal", to=table)
 
 class Signup(Resource):

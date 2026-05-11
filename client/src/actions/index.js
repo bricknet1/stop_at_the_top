@@ -103,6 +103,13 @@ export const setMarkers = (data) => {
   }
 }
 
+export const setMarkerPasses = (usernames) => {
+  return {
+    type: 'SETMARKERPASSES',
+    payload: usernames
+  }
+}
+
 export const updateBet = (number) => {
   return {
     type: 'UPDATEBET',
