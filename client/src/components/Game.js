@@ -215,52 +215,80 @@ function Game ({messages, setMessages}){
     if (updatedUser.username === user.username){dispatch(setUser(updatedUser))}
   }
 
+  // Placeholder deck uses "111" for the first slot; real cards never do. Catches
+  // fresh tables and late joiners who never received shuffle/reveal state.
+  const firstCardIsPlaceholder = deck[0] === "111"
+  const isPlayer1 =
+    Boolean(user?.username) &&
+    Boolean(players[0]?.username) &&
+    players[0].username === user.username
+  const showAwaitingSyncedGame =
+    firstCardIsPlaceholder && players.length > 0 && Boolean(user?.username)
+
   return (
     <>
       <div className="play-area">
-        <div className="card" id="card1">
-          <img className="playingCard" src={card1revealed?cardImage+deck[0]+'.png':cardImage+'back.png'} alt={card1revealed?deck[0]:"Back of card"} />
-          <div className="markers">
-            {markersDiv(0)}
-            {/* {selectedCard===0?user.username:''} */}
+        {showAwaitingSyncedGame ? (
+          <div className="sync-gate-card-area" role="status">
+            {isPlayer1 ? (
+              <>
+                <p className="sync-gate-message">
+                  Start the round when everyone is ready. This loads a shuffled deck
+                  for all players at the table.
+                </p>
+                <button type="button" className="sync-gate-button" onClick={emitShuffle}>
+                  Begin game
+                </button>
+              </>
+            ) : (
+              <p className="sync-gate-message">
+                There is a game underway on this table, or the host has not started the
+                next round yet. Please stand by; you will sync automatically when the
+                deck is shuffled for the next game.
+              </p>
+            )}
           </div>
-        </div>
-        <div className="card" id="card2">
-          <img className="playingCard" src={card2revealed?cardImage+deck[1]+'.png':cardImage+'back.png'} alt={card2revealed?deck[1]:"Back of card"} />
-          <div className="markers">
-            {markersDiv(1)}
-            {/* {selectedCard===1?user.username:''} */}
-          </div>
-        </div>
-        <div className="card" id="card3">
-          <img className="playingCard" src={card3revealed?cardImage+deck[2]+'.png':cardImage+'back.png'} alt={card3revealed?deck[2]:"Back of card"} />
-          <div className="markers">
-            {markersDiv(2)}
-            {/* {selectedCard===2?user.username:''} */}
-          </div>
-        </div>
-        <div className="card" id="card4">
-          <img className="playingCard" src={card4revealed?cardImage+deck[3]+'.png':cardImage+'back.png'} alt={card4revealed?deck[3]:"Back of card"} />
-          <div className="markers">
-            {markersDiv(3)}
-            {/* {selectedCard===3?user.username:''} */}
-          </div>
-        </div>
-        <div className="card" id="card5">
-          <img className="playingCard" src={card5revealed?cardImage+deck[4]+'.png':cardImage+'back.png'} alt={card5revealed?deck[4]:"Back of card"} />
-          <div className="markers">
-            {markersDiv(4)}
-            {/* {selectedCard===4?user.username:''} */}
-          </div>
-        </div>
-        <div className="card" id="card6">
-          <img className="playingCard" src={card6revealed?cardImage+deck[5]+'.png':cardImage+'back.png'} alt={card6revealed?deck[5]:"Back of card"} />
-          <div className="markers" >
-            {markersDiv(5)}
-            {/* {selectedCard===5?user.username:''} */}
-          </div>
-        </div>
-        <h3 className='superCard'>Super Card!</h3>
+        ) : (
+          <>
+            <div className="card" id="card1">
+              <img className="playingCard" src={card1revealed?cardImage+deck[0]+'.png':cardImage+'back.png'} alt={card1revealed?deck[0]:"Back of card"} />
+              <div className="markers">
+                {markersDiv(0)}
+              </div>
+            </div>
+            <div className="card" id="card2">
+              <img className="playingCard" src={card2revealed?cardImage+deck[1]+'.png':cardImage+'back.png'} alt={card2revealed?deck[1]:"Back of card"} />
+              <div className="markers">
+                {markersDiv(1)}
+              </div>
+            </div>
+            <div className="card" id="card3">
+              <img className="playingCard" src={card3revealed?cardImage+deck[2]+'.png':cardImage+'back.png'} alt={card3revealed?deck[2]:"Back of card"} />
+              <div className="markers">
+                {markersDiv(2)}
+              </div>
+            </div>
+            <div className="card" id="card4">
+              <img className="playingCard" src={card4revealed?cardImage+deck[3]+'.png':cardImage+'back.png'} alt={card4revealed?deck[3]:"Back of card"} />
+              <div className="markers">
+                {markersDiv(3)}
+              </div>
+            </div>
+            <div className="card" id="card5">
+              <img className="playingCard" src={card5revealed?cardImage+deck[4]+'.png':cardImage+'back.png'} alt={card5revealed?deck[4]:"Back of card"} />
+              <div className="markers">
+                {markersDiv(4)}
+              </div>
+            </div>
+            <div className="card" id="card6">
+              <img className="playingCard" src={card6revealed?cardImage+deck[5]+'.png':cardImage+'back.png'} alt={card6revealed?deck[5]:"Back of card"} />
+              <div className="markers" >
+                {markersDiv(5)}
+              </div>
+            </div>
+            <h3 className='superCard'>Super Card!</h3>
+          </>
+        )}
         <h1 className='howyouwinthegame'>Stop at the Top!</h1>
         <p className="tableID">Table: {tableID}</p>
         <p className="bet">Current Bet: {bet}</p>

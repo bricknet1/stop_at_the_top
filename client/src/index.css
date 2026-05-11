@@ -16,6 +16,38 @@
   width: 800px;
 }
 
+.sync-gate-card-area {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 760px;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  box-sizing: border-box;
+  border: 2px dashed rgba(255, 215, 0, 0.5);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.sync-gate-message {
+  margin: 0;
+  max-width: 28rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+  color: #f5f5dc;
+}
+
+.sync-gate-button {
+  font-size: 1rem;
+  padding: 0.5rem 1.25rem;
+  cursor: pointer;
+}
+
 .howyouwinthegame {
   font-family: Qwigley;
   color: yellow;

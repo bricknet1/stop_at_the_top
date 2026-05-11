@@ -12,10 +12,16 @@ export class SocketListener {
     updateUser
   ) {
     console.log("setting up socket");
+    // Dev: use the page origin (e.g. http://localhost:3000) so Engine.IO hits the
+    // CRA proxy and sends the same Flask session cookie as /logindb and /table.
+    // A bare ws://localhost:5555 connection often has no session, so connect()
+    // on the server returns early and you never appear in players[].
     const SOCKET_URL =
       process.env.NODE_ENV === "production"
         ? "wss://stopatthetop.onrender.com"
-        : process.env.REACT_APP_SOCKET_URL || "ws://localhost:5555";
+        : process.env.REACT_APP_SOCKET_URL ||
+          (typeof window !== "undefined" && window.location?.origin) ||
+          "http://localhost:5555";
     const socket = io(SOCKET_URL, {
       withCredentials: true,
     });
