@@ -19,6 +19,7 @@ function Game ({messages, setMessages}){
   /** Amount committed to the server when Place Bet succeeds; drives "Current Bet:" after placement. */
   const [officialBet, setOfficialBet] = useState(0);
   const [markerPassed, setMarkerPassed] = useState(false);
+  const [messageDraft, setMessageDraft] = useState('');
 
   useEffect(()=>{
     if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateMarkerPasses, updateUser)}
@@ -56,8 +57,15 @@ function Game ({messages, setMessages}){
     )}
   </div>
 
-  function handleSendMessage(){
-    listener.sendMessage('test message')
+  // function handleSendMessage () {
+  //   listener.sendMessage('test message')
+  // }
+
+  function handleSendRoomMessage () {
+    const text = messageDraft.trim()
+    if (!text) return
+    listener.sendMessage(text)
+    setMessageDraft('')
   }
 
   const setAllMessages = (message) => {
@@ -548,7 +556,7 @@ function Game ({messages, setMessages}){
         <div className={playerFrameClassName(5)} id="player6">
           <div className={playerPanelClassName(5)}><br/><br/>{players[5]?.username}<br/>Chips: {players[5]?.chips}<br/>Bet: {players[5]?.bet}</div>
         </div>
-        <button onClick={handleSendMessage}>MESSAGE</button>
+        {/* <button onClick={handleSendMessage}>MESSAGE</button> */}
         {/* <button type="button" onClick={emitReveal}>REVEAL CARD</button> */}
         <button onClick={emitShuffle}>RESET GAME</button>
         {/* <button onClick={wintest}>All Win</button>
@@ -559,6 +567,27 @@ function Game ({messages, setMessages}){
         Total players: {players.length}<br/>
         Total messages: {messages.length}
         {messageDisplay}
+        <div className="message-composer">
+          <input
+            type="text"
+            className="message-composer-input"
+            value={messageDraft}
+            onChange={(e) => setMessageDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                handleSendRoomMessage()
+              }
+            }}
+            placeholder="Type a message to the room…"
+            aria-label="Message to the room"
+            maxLength={500}
+            autoComplete="off"
+          />
+          <button type="button" className="message-composer-send" onClick={handleSendRoomMessage}>
+            Send
+          </button>
+        </div>
       </div>
     </>
   );
