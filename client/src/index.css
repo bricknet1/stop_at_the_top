@@ -89,13 +89,14 @@
 }
 
 .player {
-  border-color: black;
+  border-color: white;
   border-width: 2px;
   border-style: dotted;
   border-radius: 60px;
   width: 100px;
   height: 140px;
   position: absolute;
+  color: white;
 }
 
 #player1 {
