@@ -5,9 +5,15 @@ hdlr = logging.FileHandler('log.log')
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 hdlr.setFormatter(formatter)
 
-from dotenv import load_dotenv
-load_dotenv()
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load repo-root .env regardless of where the server is started from.
+dotenv_path = Path(__file__).resolve().parent.parent / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path)
 
 from flask import Flask, request, make_response, session, jsonify, abort, render_template
 from flask_migrate import Migrate

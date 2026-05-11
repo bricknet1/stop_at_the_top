@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 
 # import os
+import os
 from dotenv import load_dotenv
-load_dotenv()
+from pathlib import Path
+
+# Load repo-root .env regardless of where the server is started from.
+dotenv_path = Path(__file__).resolve().parent.parent / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path)
 
 from flask import request, make_response, session, jsonify, abort, render_template, redirect, url_for
 from flask_restful import Resource
@@ -219,14 +225,74 @@ class AuthorizedSession(Resource):
             abort(401, "Not Authorized")
 api.add_resource(AuthorizedSession, '/authorizeddb')
 
+def _get_current_user_from_session():
+    """
+    Ensures the caller is an authenticated user (session cookie).
+    Reuses the same session model as /authorizeddb.
+    """
+    user_id = session.get('user_id')
+    if not user_id:
+        abort(401, "Not Authorized")
+    user = User.query.filter_by(id=user_id).first()
+    if not user:
+        abort(401, "Not Authorized")
+    return user
+
+def _require_admin_token():
+    """
+    Restricts sensitive endpoints to a shared admin token.
+    Provide either:
+      - header `X-Admin-Token: <token>`, or
+      - `Authorization: Bearer <token>`
+    The expected value is read from env vars: ADMIN_API_TOKEN (preferred) or ADMIN_TOKEN.
+    """
+    expected = os.environ.get("ADMIN_API_TOKEN") or os.environ.get("ADMIN_TOKEN")
+    if not expected:
+        # Misconfiguration: fail closed.
+        abort(500, "Admin token not configured on server.")
+
+    token = request.headers.get("X-Admin-Token")
+    if not token:
+        auth = request.headers.get("Authorization", "")
+        if auth.lower().startswith("bearer "):
+            token = auth.split(" ", 1)[1].strip()
+
+    if not token or token != expected:
+        abort(403, "Forbidden")
+    return True
+
 class Logout(Resource):
     def delete(self):
         session['user_id'] = None
         return make_response('', 204)
 api.add_resource(Logout, '/logoutdb')
 
+class UsersList(Resource):
+    def get(self):
+        _require_admin_token()
+        users = User.query.all()
+        return make_response([user.to_dict() for user in users], 200)
+api.add_resource(UsersList, '/users')
+
 class Users(Resource):
+    def get(self, id):
+        _require_admin_token()
+        user = User.query.filter_by(id=id).first()
+        if not user:
+            abort(404, "User not found")
+        return make_response(user.to_dict(), 200)
+
     def patch(self, id):
+        # Admins can modify any user; players can only modify their own record.
+        current_user = None
+        try:
+            _require_admin_token()
+        except Exception:
+            current_user = _get_current_user_from_session()
+
+        if current_user is not None and current_user.id != id:
+            abort(403, "Forbidden")
+
         user = User.query.filter_by(id=id).first()
         data = request.get_json()
         if not user:
@@ -239,6 +305,7 @@ class Users(Resource):
         return response
 
     def delete(self, id):
+        _require_admin_token()
         user = User.query.filter_by(id=id).first()
         if not user:
             raise NotFound

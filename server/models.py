@@ -9,7 +9,8 @@ from sqlalchemy.ext.associationproxy import association_proxy
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
-    serialize_rules = ('-_password_hash', '-email')
+    # Admin endpoints may require email visibility; keep password hash excluded.
+    serialize_rules = ('-_password_hash',)
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True)
