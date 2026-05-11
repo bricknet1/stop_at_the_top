@@ -12,13 +12,13 @@ export class SocketListener {
     updateUser
   ) {
     console.log("setting up socket");
-    // uncomment next for local
-    // const socket = io("ws://localhost:5555", {
-      // uncomment next for deploy
-      const socket = io("wss://stopatthetop.onrender.com", {
+    const SOCKET_URL =
+      process.env.NODE_ENV === "production"
+        ? "wss://stopatthetop.onrender.com"
+        : process.env.REACT_APP_SOCKET_URL || "ws://localhost:5555";
+    const socket = io(SOCKET_URL, {
       withCredentials: true,
     });
-    // const socket = new this.socket('localhost.......')
 
     socket.on("connect", () => {
       console.log("Connected to server");

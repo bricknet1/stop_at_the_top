@@ -25,16 +25,17 @@ app = Flask(
 )
 app.debug=True
 app.logger.addHandler(hdlr) 
-# uncomment next for local
-# CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
-# uncomment next for deploy
-CORS(app, resources={r"/*": {"origins": "https://stopatthetop.onrender.com"}}, supports_credentials=True)
-bcrypt = Bcrypt(app)
 
-# uncomment next for local
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-# uncomment next for deploy
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+IS_DEPLOY = os.environ.get('RENDER') is not None
+
+if IS_DEPLOY:
+    CORS(app, resources={r"/*": {"origins": "https://stopatthetop.onrender.com"}}, supports_credentials=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
+else:
+    CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+
+bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_COOKIE_SAMESITE']='Strict'
 app.json.compact = False

@@ -248,5 +248,4 @@ class Users(Resource):
 api.add_resource(Users, '/users/<int:id>')
 
 if __name__ == '__main__':
-    app.run(port=5555, debug=True)
-    socketio.run(app, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5555, debug=True)
