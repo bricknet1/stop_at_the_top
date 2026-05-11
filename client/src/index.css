@@ -464,6 +464,7 @@
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
+  gap: 0.4rem;
   z-index: 2;
   width: 11.5rem;
   max-width: calc(100% - 40px);
@@ -505,4 +506,24 @@
   color: #ffd700;
   border-color: #ffd700;
   opacity: 1;
+}
+
+.marker-controls-pass {
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  padding: 0.5rem 0.45rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  text-align: center;
+  border: 2px solid #ffd700;
+  border-radius: 4px;
+  background: transparent;
+  color: #ffd700;
+}
+
+.marker-controls-pass:hover {
+  filter: brightness(1.08);
+  background: rgba(255, 215, 0, 0.12);
 }

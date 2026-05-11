@@ -18,6 +18,7 @@ function Game ({messages, setMessages}){
   const [betPlaced, setBetPlaced] = useState(false);
   /** Amount committed to the server when Place Bet succeeds; drives "Current Bet:" after placement. */
   const [officialBet, setOfficialBet] = useState(0);
+  const [markerPassed, setMarkerPassed] = useState(false);
 
   useEffect(()=>{
     if (!listener){listener = new SocketListener(setAllMessages, resetGameState, revealNextCard, addNewPlayer, updateAllPlayers, updateMarkers, updateUser)}
@@ -80,6 +81,7 @@ function Game ({messages, setMessages}){
     dispatch(resetBet())
     setBetPlaced(false)
     setOfficialBet(0)
+    setMarkerPassed(false)
     determineWinningCard(deck)
   }  
 
@@ -96,6 +98,7 @@ function Game ({messages, setMessages}){
   }
 
   const revealNextCard = () => {
+    setMarkerPassed(false)
     if(cardRef.current[4]===true){
       dispatch(revealCard6(true))
       cardRef.current.push(true)
@@ -201,6 +204,18 @@ function Game ({messages, setMessages}){
 
   const canPlaceMarker =
     betPlaced && selectedCard === false && card6revealed === false
+
+  const showPassButton =
+    betPlaced &&
+    selectedCard === false &&
+    !card6revealed &&
+    !markerPassed &&
+    markerTargetIndex !== 4
+
+  const handlePassMarker = () => {
+    if (firstCardIsPlaceholder || !showPassButton) return
+    setMarkerPassed(true)
+  }
 
   const playMarker = () => {
     if (firstCardIsPlaceholder) return
@@ -431,20 +446,41 @@ function Game ({messages, setMessages}){
         )}
         {!firstCardIsPlaceholder && (
           <div className="marker-controls" aria-label="Marker controls">
-            <button
-              type="button"
-              className={`marker-controls-place${
-                !betPlaced
-                  ? ' marker-controls-place--inactive'
-                  : canPlaceMarker
-                    ? ''
-                    : ' marker-controls-place--done'
-              }`}
-              onClick={playMarker}
-              disabled={!canPlaceMarker}
-            >
-              {markerButtonLabel()}
-            </button>
+            {markerPassed ? (
+              <button
+                type="button"
+                className="marker-controls-place marker-controls-place--done"
+                disabled
+              >
+                Passed
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className={`marker-controls-place${
+                    !betPlaced
+                      ? ' marker-controls-place--inactive'
+                      : canPlaceMarker
+                        ? ''
+                        : ' marker-controls-place--done'
+                  }`}
+                  onClick={playMarker}
+                  disabled={!canPlaceMarker}
+                >
+                  {markerButtonLabel()}
+                </button>
+                {showPassButton && (
+                  <button
+                    type="button"
+                    className="marker-controls-pass"
+                    onClick={handlePassMarker}
+                  >
+                    Pass
+                  </button>
+                )}
+              </>
+            )}
           </div>
         )}
         <p className="tableID">Table: {tableID}</p>
