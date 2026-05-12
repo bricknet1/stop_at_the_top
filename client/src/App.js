@@ -12,9 +12,6 @@ import Home from './components/Home.js';
 import Login from './components/Login.js';
 import Signup from './components/Signup.js';
 
-/** Public LinkedIn profile URL for the footer “App by Nick Johnson” link. */
-const APP_AUTHOR_LINKEDIN_URL = 'https://www.linkedin.com/in/nick-johnson/';
-
 function App() {
 
   const dispatch = useDispatch();
