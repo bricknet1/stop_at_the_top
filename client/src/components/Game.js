@@ -506,7 +506,7 @@ function Game ({messages, setMessages}){
               onClick={playBet}
               disabled={betPlaced || bet < MIN_BET}
             >
-              {betPlaced ? 'BET PLACED' : 'Place Bet'}
+              {betPlaced ? 'BET PLACED' : bet === MIN_BET ? 'Place Minimum Bet' : 'Place Bet'}
             </button>
           </div>
         )}
