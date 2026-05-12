@@ -27,6 +27,26 @@ tables = {}
 MIN_BET = 10
 
 
+def _all_seated_players_met_min_bet(players):
+    """Seated players are those with a username; game requires each to have bet >= MIN_BET."""
+    seated = [p for p in (players or []) if p.get("username")]
+    if not seated:
+        return False
+    return all((p.get("bet") or 0) >= MIN_BET for p in seated)
+
+
+def _broadcast_dealer_markers_shout(table):
+    """Table chat line when it is time to place markers (or pass)."""
+    if table not in tables:
+        return
+    content = {
+        "username": "Dealer",
+        "message": "Maaaaaaarkers! Maaaaaaarkers!",
+    }
+    send(content, to=table)
+    tables[table]["messages"].append(content)
+
+
 def generate_unique_code(length):
     while True:
         code = ""
@@ -119,12 +139,15 @@ def markerpass(data):
 @socketio.on("placebet")
 def placebet(data):
     table = session.get("table")
+    if table not in tables:
+        return
     username = data["username"]
     chips = data["chips"]
     bet = data["bet"]
     if bet < MIN_BET:
         return
     currentPlayers = tables[table]["players"]
+    all_in_before = _all_seated_players_met_min_bet(currentPlayers)
     updatedPlayers = [
         {"username": player.get("username"), "chips": player.get("chips"), "bet": player.get("bet")}
         if player.get("username") != username
@@ -134,6 +157,8 @@ def placebet(data):
     print(updatedPlayers)
     tables[table]["players"] = updatedPlayers
     emit("setplayers", tables[table]["players"], to=table)
+    if (not all_in_before) and _all_seated_players_met_min_bet(updatedPlayers):
+        _broadcast_dealer_markers_shout(table)
 
 @socketio.on("connect")
 def connect(auth):
@@ -220,6 +245,7 @@ def reveal():
     tables[table]["marker_passes"] = []
     emit("markerpasses", [], to=table)
     emit("reveal", to=table)
+
 
 class Signup(Resource):
     def post(self):
