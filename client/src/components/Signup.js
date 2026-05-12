@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import DesignViewport from './DesignViewport.js';
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {useDispatch} from 'react-redux';
@@ -68,6 +69,7 @@ function Signup() {
   })
 
   return (
+    <DesignViewport designWidth={810} designHeight={680}>
     <div className="play-area">
       <div className='signup-login'>
         <h2>Create an Account</h2>
@@ -92,6 +94,7 @@ function Signup() {
         <button className='loginsignupbtn' onClick={handleLogin}>Login Instead</button></>}
       </div>
     </div>
+    </DesignViewport>
   );
 }
 

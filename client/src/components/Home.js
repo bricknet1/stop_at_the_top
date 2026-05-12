@@ -1,5 +1,6 @@
 import { useFormik } from "formik";
 import { useState } from 'react';
+import DesignViewport from './DesignViewport.js';
 // import {useDispatch} from 'react-redux';
 
 const TABLE_CODE_LENGTH = 4;
@@ -48,6 +49,7 @@ function Home ({user, navigate, setMessages}){
   const joinDisabled = formik.values.table.trim().length !== TABLE_CODE_LENGTH;
 
   return (
+    <DesignViewport designWidth={810} designHeight={560}>
     <div className="play-area">
       <div className="card" id="card1"></div>
       <div className="card" id="card2"></div>
@@ -106,6 +108,7 @@ function Home ({user, navigate, setMessages}){
         <p>{error?error:""}</p>
       </div>
     </div>
+    </DesignViewport>
   );
 }
 

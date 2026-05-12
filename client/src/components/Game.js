@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import DesignViewport from "./DesignViewport.js";
 // import io from 'socket.io-client';
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
@@ -420,7 +421,7 @@ function Game ({messages, setMessages}){
   }
 
   return (
-    <>
+    <DesignViewport designWidth={820} designHeight={820}>
       <div className="play-area">
         {showAwaitingSyncedGame ? (
           <div className="sync-gate-card-area" role="status">
@@ -638,7 +639,7 @@ function Game ({messages, setMessages}){
           </button>
         </div>
       </div>
-    </>
+    </DesignViewport>
   );
 }
 

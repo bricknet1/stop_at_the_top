@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DesignViewport from "./DesignViewport.js";
 import { useFormik } from "formik";
 import {useDispatch} from 'react-redux';
 import {setUser} from '../actions';
@@ -42,6 +43,7 @@ function Login() {
 
 
   return (
+    <DesignViewport designWidth={810} designHeight={500}>
     <div className="play-area">
       <div className="signup-login">
         <h2>Login</h2>
@@ -78,6 +80,7 @@ function Login() {
         </button>
       </div>
     </div>
+    </DesignViewport>
   );
 }
 

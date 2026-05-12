@@ -1,17 +1,28 @@
-/* Remove UA default margin so the layout matches the viewport (no stray vertical scroll). */
+/* Remove UA default margin; lock vertical space so scaled UI fits without page scroll. */
 html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+#root {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .app {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-  /* Extra top offset for .play-area / .below-play (position:absolute; top: …) */
-  /* Match rough header block height (padding + one line); increase if bar wraps */
-  --app-user-bar-offset: 2.35rem;
+  height: 100vh;
+  max-height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .app-user-bar {
@@ -32,12 +43,38 @@ body {
 .app-main {
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   /* leave room for fixed footer so table/chat is not covered */
   padding-bottom: 3rem;
   box-sizing: border-box;
   min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Fills .app-main so ResizeObserver sees the true available area above the footer. */
+.design-viewport-shell {
+  flex: 1 1 auto;
+  align-self: stretch;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.design-viewport-stage {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.design-viewport-canvas {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .app-footer {
@@ -85,7 +122,8 @@ body {
   border-style: solid;
   border-radius: 10px;
   position: absolute;
-  top: calc(30px + var(--app-user-bar-offset));
+  left: 0;
+  top: 0;
   height: 500px;
   width: 800px;
 }
@@ -438,9 +476,10 @@ body {
 
 .below-play {
   position: absolute;
-  top: calc(550px + var(--app-user-bar-offset));
+  left: 0;
+  top: 520px;
   height: 300px;
-  width: 810px;
+  width: 800px;
 }
 
 .playingCard {
