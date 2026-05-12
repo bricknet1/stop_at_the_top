@@ -12,6 +12,9 @@ import Home from './components/Home.js';
 import Login from './components/Login.js';
 import Signup from './components/Signup.js';
 
+/** Public LinkedIn profile URL for the footer “App by Nick Johnson” link. */
+const APP_AUTHOR_LINKEDIN_URL = 'https://www.linkedin.com/in/nick-johnson/';
+
 function App() {
 
   const dispatch = useDispatch();
@@ -68,14 +71,38 @@ function App() {
   return (
     // <UserContext.Provider value={SocketListener}>
       <div className="app">
-        <Routes>
-          <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/signup" element={<Signup />} />
-          <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
-        </Routes>
-        User: {user.username} -- ID: {user.id} -- Chips: {user.chips} -- 
-        {user && <button onClick={handleLogout}>Logout</button>}
+        <header className="app-user-bar">
+          <span className="app-user-bar-meta">
+            User: {user.username} ♠️♦️ Chips: {user.chips} ♣️♥️
+          </span>
+          {user && <button type="button" onClick={handleLogout}>Logout</button>}
+        </header>
+        <div className="app-main">
+          <Routes>
+            <Route exact path="/" element={user.id!==0?<Home user={user} navigate={navigate} setMessages={setMessages}/>:<Login />} />
+            <Route exact path="/login" element={<Login />} />
+            <Route exact path="/signup" element={<Signup />} />
+            <Route path="/table/:tableID" element={<Game setMessages={setMessages} messages={messages}/>} />
+          </Routes>
+        </div>
+        <footer className="app-footer">
+          <div className="app-footer-credits">
+            <span>Original Game Design by Josiah Jenkins</span>
+            <span className="app-footer-sep" aria-hidden="true">
+              ♠️♦️♣️♥️
+            </span>
+            <span>
+              App by{' '}
+              <a
+                href={'https://www.linkedin.com/in/nickjohnson-losangeles/'}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Nick Johnson
+              </a>
+            </span>
+          </div>
+        </footer>
       </div>
     // </UserContext.Provider>
   );

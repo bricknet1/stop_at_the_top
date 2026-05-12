@@ -2,6 +2,11 @@
 
 Real-time multiplayer card game with a React client and a Flask + Socket.IO backend. Players join tables with room codes, place bets, and play with live updates over WebSockets.
 
+## Credits
+
+- **Original physical card game:** Josiah Jenkins.
+- **This web application:** Nick Johnson.
+
 ## Tech stack
 
 | Layer | Technologies |
@@ -129,7 +134,3 @@ stop_at_the_top/
 - Production mode is detected when the `RENDER` environment variable is set ([server/config.py](server/config.py)).
 - CORS is restricted to `https://stopatthetop.onrender.com` in that mode; update the origin if you change the public URL.
 - Ensure `DATABASE_URL` / `DATABASE_URI` and `APP_SECRET_KEY` are set on the host.
-
-## Contributing
-
-Issues and pull requests are welcome. Keep changes focused and match existing style in the touched files.

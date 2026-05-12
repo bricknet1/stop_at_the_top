@@ -1,7 +1,74 @@
 .app {
   display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Extra top offset for .play-area / .below-play (position:absolute; top: …) */
+  /* Match rough header block height (padding + one line); increase if bar wraps */
+  --app-user-bar-offset: 2.35rem;
+}
+
+.app-user-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
+}
+
+.app-user-bar-meta {
+  white-space: nowrap;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* leave room for fixed footer so table/chat is not covered */
+  padding-bottom: 3rem;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+.app-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  color: #f5f5dc;
+  background: rgba(5, 40, 5, 0.92);
+  border-top: 1px solid rgba(0, 0, 0, 0.35);
+  box-sizing: border-box;
+}
+
+.app-footer-credits {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem 0.5rem;
+}
+
+.app-footer-sep {
+  opacity: 0.65;
+}
+
+.app-footer a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.app-footer a:hover {
+  color: #fff;
+  opacity: 0.9;
 }
 
 .play-area {
@@ -11,7 +78,7 @@
   border-style: solid;
   border-radius: 10px;
   position: absolute;
-  top: 30px;
+  top: calc(30px + var(--app-user-bar-offset));
   height: 500px;
   width: 800px;
 }
@@ -292,7 +359,7 @@
 
 .below-play {
   position: absolute;
-  top: 550px;
+  top: calc(550px + var(--app-user-bar-offset));
   height: 300px;
   width: 810px;
 }
