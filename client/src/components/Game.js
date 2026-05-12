@@ -368,6 +368,9 @@ function Game ({messages, setMessages}){
     !firstCardIsPlaceholder &&
     !card6revealed
 
+  const showP1StartNextGame =
+    isPlayer1 && card6revealed && !firstCardIsPlaceholder
+
   const showAwaitingSyncedGame =
     firstCardIsPlaceholder && players.length > 0 && Boolean(user?.username)
 
@@ -535,6 +538,17 @@ function Game ({messages, setMessages}){
                 </button>
               </div>
             )}
+            {showP1StartNextGame && (
+              <div className="marker-controls-p1-reveal-host" aria-label="Start next round">
+                <button
+                  type="button"
+                  className="marker-controls-p1-reveal-btn"
+                  onClick={emitShuffle}
+                >
+                  Start Next Game
+                </button>
+              </div>
+            )}
           </div>
         )}
         <p className="tableID">Table: {tableID}</p>
@@ -559,9 +573,9 @@ function Game ({messages, setMessages}){
         </div>
         {/* <button onClick={handleSendMessage}>MESSAGE</button> */}
         {/* <button type="button" onClick={emitReveal}>REVEAL CARD</button> */}
-        <button onClick={emitShuffle}>RESET GAME</button>
-        {/* <button onClick={wintest}>All Win</button>
-        <button onClick={losetest}>All Lose</button> */}
+        {/* <button onClick={emitShuffle}>RESET GAME</button> */}
+        {/* <button onClick={wintest}>All Win</button> */}
+        {/* <button onClick={losetest}>All Lose</button> */}
         <button onClick={outcometest}>Outcome</button>
       </div>
       <div className="below-play">
