@@ -24,6 +24,9 @@ socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
 
 tables = {}
 
+MIN_BET = 10
+
+
 def generate_unique_code(length):
     while True:
         code = ""
@@ -112,12 +115,15 @@ def markerpass(data):
         passes.append(username)
     emit("markerpasses", list(passes), to=table)
 
+
 @socketio.on("placebet")
 def placebet(data):
     table = session.get("table")
     username = data["username"]
     chips = data["chips"]
     bet = data["bet"]
+    if bet < MIN_BET:
+        return
     currentPlayers = tables[table]["players"]
     updatedPlayers = [
         {"username": player.get("username"), "chips": player.get("chips"), "bet": player.get("bet")}

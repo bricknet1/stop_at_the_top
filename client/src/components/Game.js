@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
 import {useSelector, useDispatch} from 'react-redux';
-import {revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, setMarkerPasses, updateBet, resetBet, setUser, setWinningCard} from '../actions';
+import {revealCard1, revealCard2, revealCard3, revealCard4, revealCard5, revealCard6, hideAllCards, setDeck, addPlayer, setAllPlayers, setSelectedCard, setMarkers, setMarkerPasses, updateBet, resetBet, setUser, setWinningCard, MIN_BET} from '../actions';
 
 let listener
 
@@ -290,6 +290,7 @@ function Game ({messages, setMessages}){
   const playBet = () => {
     if (firstCardIsPlaceholder) return
     if (betPlaced) return
+    if (bet < MIN_BET) return
     const stake = bet
     const values = { chips: user.chips - stake }
     fetch(`/users/${user.id}`, {
@@ -460,12 +461,12 @@ function Game ({messages, setMessages}){
         {!firstCardIsPlaceholder && (
           <div className="bet-controls" aria-label="Betting controls">
             <div className="bet-controls-row">
-              <button type="button" onClick={bet10}>+10</button>
-              <button type="button" onClick={betMinus10}>-10</button>
+              <button type="button" onClick={bet10} disabled={betPlaced}>+10</button>
+              <button type="button" onClick={betMinus10} disabled={betPlaced || bet <= MIN_BET}>-10</button>
             </div>
             <div className="bet-controls-row">
-              <button type="button" onClick={bet100}>+100</button>
-              <button type="button" onClick={betMinus100}>-100</button>
+              <button type="button" onClick={bet100} disabled={betPlaced}>+100</button>
+              <button type="button" onClick={betMinus100} disabled={betPlaced || bet <= MIN_BET}>-100</button>
             </div>
             {!betPlaced && (
               <p className="bet-controls-staging" aria-live="polite">
@@ -477,7 +478,7 @@ function Game ({messages, setMessages}){
               type="button"
               className={`bet-controls-place${betPlaced ? ' bet-controls-place--placed' : ''}`}
               onClick={playBet}
-              disabled={betPlaced}
+              disabled={betPlaced || bet < MIN_BET}
             >
               {betPlaced ? 'BET PLACED' : 'Place Bet'}
             </button>

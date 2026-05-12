@@ -110,6 +110,9 @@ export const setMarkerPasses = (usernames) => {
   }
 }
 
+/** Minimum stake a player may place (server enforces the same). */
+export const MIN_BET = 10
+
 export const updateBet = (number) => {
   return {
     type: 'UPDATEBET',
