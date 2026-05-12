@@ -369,6 +369,12 @@ function Game ({messages, setMessages}){
     return false
   }
 
+  /** Everyone still at the table must place a bet before the host can reveal. */
+  const activePlayers = players.filter((p) => p && p.username)
+  const allActivePlayersPlacedBet =
+    activePlayers.length > 0 &&
+    activePlayers.every((p) => (p.bet ?? 0) >= MIN_BET)
+
   const bettors = players.filter((p) => p && p.bet > 0)
   const bettorsStillNeedMarker = bettors.filter(
     (p) => !usernameOnAnyMarker(p.username)
@@ -380,6 +386,7 @@ function Game ({messages, setMessages}){
 
   const showP1RevealOverlay =
     isPlayer1 &&
+    allActivePlayersPlacedBet &&
     allMarkerDecisionsIn &&
     !firstCardIsPlaceholder &&
     !card6revealed
