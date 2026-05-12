@@ -19,6 +19,8 @@ function Game ({messages, setMessages}){
   /** Amount committed to the server when Place Bet succeeds; drives "Current Bet:" after placement. */
   const [officialBet, setOfficialBet] = useState(0);
   const [markerPassed, setMarkerPassed] = useState(false);
+  /** Player 1: after card 6, payouts run once before "Start Next Game" is shown. */
+  const [payoutsProcessed, setPayoutsProcessed] = useState(false);
   const [messageDraft, setMessageDraft] = useState('');
 
   useEffect(()=>{
@@ -92,6 +94,7 @@ function Game ({messages, setMessages}){
     setOfficialBet(0)
     setMarkerPassed(false)
     dispatch(setMarkerPasses([]))
+    setPayoutsProcessed(false)
     determineWinningCard(deck)
   }  
 
@@ -332,7 +335,7 @@ function Game ({messages, setMessages}){
   //   listener.payout(["lose", "lose", "lose", "lose", "lose", "lose"])
   // }
 
-  const outcometest = () => {
+  const handleOutcomes = () => {
     console.log("outcomes");
     let outcomesBool = []
     // console.log(markers[winningCard].includes(players[0]['username']));
@@ -342,6 +345,11 @@ function Game ({messages, setMessages}){
     const outcomes = outcomesBool.map(bool => bool ? (winningCard !== 5 ? "win" : "superwin") : "lose")
     console.log(outcomes);
     listener.payout(outcomes)
+  }
+
+  const handleProcessPayouts = () => {
+    handleOutcomes()
+    setPayoutsProcessed(true)
   }
 
   const updateUser = (updatedUser) => {
@@ -546,7 +554,18 @@ function Game ({messages, setMessages}){
                 </button>
               </div>
             )}
-            {showP1StartNextGame && (
+            {showP1StartNextGame && !payoutsProcessed && (
+              <div className="marker-controls-p1-reveal-host" aria-label="Process payouts">
+                <button
+                  type="button"
+                  className="marker-controls-p1-reveal-btn"
+                  onClick={handleProcessPayouts}
+                >
+                  Process Payouts
+                </button>
+              </div>
+            )}
+            {showP1StartNextGame && payoutsProcessed && (
               <div className="marker-controls-p1-reveal-host" aria-label="Start next round">
                 <button
                   type="button"
@@ -584,7 +603,7 @@ function Game ({messages, setMessages}){
         {/* <button onClick={emitShuffle}>RESET GAME</button> */}
         {/* <button onClick={wintest}>All Win</button> */}
         {/* <button onClick={losetest}>All Lose</button> */}
-        <button onClick={outcometest}>Outcome</button>
+        {/* <button onClick={handleOutcomes}>Outcome</button> */}
       </div>
       <div className="below-play">
         Total players: {players.length}<br/>
