@@ -184,7 +184,15 @@ function Game ({messages, setMessages}){
 
   const markerButtonLabel = () => {
     if (!betPlaced) return '← Place Your Bet First'
-    if (selectedCard !== false || card6revealed) return 'Marker Placed'
+    if (card6revealed) {
+      if (winningCard !== false && user?.username) {
+        const onWinningCard = markers[winningCard].includes(user.username)
+        if (!onWinningCard) return 'LOSE'
+        return winningCard === 5 ? 'SUPER WIN' : 'WIN'
+      }
+      return 'Marker Placed'
+    }
+    if (selectedCard !== false) return 'Marker Placed'
     if (markerTargetIndex === 4) {
       return (
         <>
