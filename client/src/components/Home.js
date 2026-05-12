@@ -2,6 +2,8 @@ import { useFormik } from "formik";
 import { useState } from 'react';
 // import {useDispatch} from 'react-redux';
 
+const TABLE_CODE_LENGTH = 4;
+
 function Home ({user, navigate, setMessages}){
 
   // const dispatch = useDispatch();
@@ -43,6 +45,8 @@ function Home ({user, navigate, setMessages}){
     },
   });
 
+  const joinDisabled = formik.values.table.trim().length !== TABLE_CODE_LENGTH;
+
   return (
     <div className="play-area">
       <div className="card" id="card1"></div>
@@ -51,20 +55,52 @@ function Home ({user, navigate, setMessages}){
       <div className="card" id="card4"></div>
       <div className="card" id="card5"></div>
       <div className="card" id="card6"></div>
-      <h1 className='howyouwinthegame'>Stop at the Top!</h1>
+      <div className="home-hero">
+        <h1 className='howyouwinthegame'>Stop at the Top!</h1>
+        <p className="howyouwinthegame-tagline">
+          The name of the game is how you win the game!
+        </p>
+      </div>
       <div className="create-join">
-        <form onSubmit={formik.handleSubmit}>
+        <form className="create-join-form" onSubmit={formik.handleSubmit}>
           {/* <label>Join a Table</label> */}
-          <br></br>
-          <input
-            type="text"
-            name="table"
-            placeholder="Enter Table Code Here"
-            value={formik.values.table}
-            onChange={formik.handleChange}
-          />
-          <button type="submit" name='join' value={Boolean(true)} onClick={formik.handleChange}>Join a Room</button>
-          <button type="submit" name='create' value={Boolean(true)} onClick={formik.handleChange}>Create a new table</button>
+          <button
+            type="submit"
+            name="create"
+            value={Boolean(true)}
+            className="bet-controls-place create-join__btn"
+            onClick={formik.handleChange}
+          >
+            Create a New Table
+          </button>
+          <div className="create-join__join-section">
+            <input
+              type="text"
+              name="table"
+              className="create-join__code-input"
+              placeholder="Enter Table Code Here"
+              value={formik.values.table}
+              onChange={formik.handleChange}
+              maxLength={TABLE_CODE_LENGTH}
+              autoCapitalize="characters"
+              spellCheck="false"
+            />
+            <button
+              type="submit"
+              name="join"
+              value={Boolean(true)}
+              className="bet-controls-place create-join__btn"
+              onClick={formik.handleChange}
+              disabled={joinDisabled}
+              title={
+                joinDisabled
+                  ? `Enter exactly ${TABLE_CODE_LENGTH} characters to join`
+                  : undefined
+              }
+            >
+              Enter Table Code to Join a Table
+            </button>
+          </div>
         </form><br/>
         {/* <button name="createtable">Create a New Table</button> */}
         <p>{error?error:""}</p>

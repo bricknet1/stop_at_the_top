@@ -1,3 +1,10 @@
+/* Remove UA default margin so the layout matches the viewport (no stray vertical scroll). */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 .app {
   display: flex;
   flex-direction: column;
@@ -115,6 +122,31 @@
   cursor: pointer;
 }
 
+.home-hero {
+  position: absolute;
+  width: 800px;
+  top: 188px;
+  left: 0;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.home-hero .howyouwinthegame {
+  position: static;
+  width: 100%;
+  margin: 0;
+  line-height: 1.05;
+}
+
+.howyouwinthegame-tagline {
+  font-family: Qwigley;
+  color: yellow;
+  font-size: 42px;
+  text-align: center;
+  margin: 0.1em 0.75rem 0;
+  line-height: 1.15;
+}
+
 .howyouwinthegame {
   font-family: Qwigley;
   color: yellow;
@@ -122,7 +154,7 @@
   text-align: center;
   position: absolute;
   width: 800px;
-  top: 150px;
+  top: 134px;
 }
 
 .superCard {
@@ -143,7 +175,7 @@
   text-align: center;
   position: absolute;
   width: 800px;
-  top: 250px;
+  top: 235px;
 }
 
 .card {
@@ -354,7 +386,54 @@
   text-align: center;
   position: absolute;
   width: 800px;
-  top: 300px;
+  top: 326px;
+}
+
+.create-join .create-join-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.create-join__join-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 18rem;
+  margin-top: 2.5rem;
+  box-sizing: border-box;
+}
+
+.create-join__btn {
+  width: 100%;
+  max-width: 18rem;
+  box-sizing: border-box;
+}
+
+.create-join__code-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem 0.65rem;
+  font-size: 1rem;
+  border: 2px solid #0a3d0a;
+  border-radius: 4px;
+  background: #f5f5dc;
+  color: #063806;
+}
+
+.create-join__code-input::placeholder {
+  color: #3d5c3d;
+  opacity: 0.85;
+}
+
+.create-join .bet-controls-place:disabled {
+  cursor: not-allowed;
+  opacity: 0.88;
+  background: #063806;
+  color: rgba(255, 215, 0, 0.72);
+  border-color: rgba(255, 215, 0, 0.45);
 }
 
 .below-play {
@@ -477,7 +556,7 @@
   text-align: center;
   position: absolute;
   width: 800px;
-  top: 280px;
+  top: 265px;
 }
 
 .bet-controls {
