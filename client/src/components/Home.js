@@ -52,6 +52,12 @@ function Home ({user, navigate, setMessages}){
 
   const joinDisabled = formik.values.table.trim().length !== TABLE_CODE_LENGTH;
 
+  const handleCreateTable = () => {
+    formik
+      .setValues({ ...formik.values, create: true, join: false }, false)
+      .then(() => formik.submitForm());
+  };
+
   return (
     <DesignViewport
       designWidth={APP_VIEWPORT_DESIGN_WIDTH}
@@ -72,13 +78,12 @@ function Home ({user, navigate, setMessages}){
       </div>
       <div className="create-join">
         <form className="create-join-form" onSubmit={formik.handleSubmit}>
-          {/* <label>Join a Table</label> */}
+          {/* Create is type="button" so Enter in the code field only triggers the sole
+              type="submit" (join), not implicit submission of the first submit control. */}
           <button
-            type="submit"
-            name="create"
-            value={Boolean(true)}
+            type="button"
             className="bet-controls-place create-join__btn"
-            onClick={formik.handleChange}
+            onClick={handleCreateTable}
           >
             Create a New Table
           </button>
