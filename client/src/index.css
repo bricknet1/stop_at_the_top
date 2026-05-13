@@ -128,6 +128,54 @@ body {
   width: 800px;
 }
 
+/* Right column: table chat (same shell on every screen; disabled off-table). */
+.game-chat-column {
+  position: absolute;
+  left: 810px;
+  top: 0;
+  width: 200px;
+  height: 510px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.45rem;
+  background: #fff;
+}
+
+.game-chat-column__meta {
+  flex-shrink: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.68rem;
+  line-height: 1.35;
+  color: #222;
+  text-align: center;
+}
+
+.game-chat-column__empty {
+  margin: 0;
+  padding: 0.5rem 0.35rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  text-align: center;
+  color: #555;
+}
+
+.signup-login {
+  position: absolute;
+  left: 50%;
+  top: 0.75rem;
+  bottom: 0.75rem;
+  transform: translateX(-50%);
+  width: min(22rem, calc(100% - 2rem));
+  max-height: calc(100% - 1.5rem);
+  overflow-y: auto;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 0 0.25rem;
+}
+
 .sync-gate-card-area {
   position: absolute;
   left: 20px;
@@ -474,14 +522,6 @@ body {
   border-color: rgba(255, 215, 0, 0.45);
 }
 
-.below-play {
-  position: absolute;
-  left: 0;
-  top: 520px;
-  height: 300px;
-  width: 800px;
-}
-
 .playingCard {
   width: 90px;
   height: 130px;
@@ -491,31 +531,54 @@ body {
 }
 
 .messages {
-  /* background-color: rgb(5, 63, 5); */
-  border-color: black;
-  border-width: 5px;
+  border-color: rgba(0, 0, 0, 0.5);
+  border-width: 2px;
   border-style: solid;
-  border-radius: 10px;
-  position: absolute;
-  top: 45px;
-  height: 200px;
-  width: 800px;
+  border-radius: 8px;
   overflow: auto;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.game-chat-column .messages {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: auto;
+  top: auto;
+  box-sizing: border-box;
+  text-align: left;
+  padding: 0.4rem 0.4rem;
+  border-color: #bbb;
+  background: #fafafa;
+  scrollbar-gutter: stable;
 }
 
 .message {
-  margin-left: 5px;
+  margin: 0 0 0.35rem 0;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  word-break: break-word;
+  text-align: left;
+}
+
+.game-chat-column .message:last-child {
+  margin-bottom: 0;
 }
 
 .message-composer {
-  position: absolute;
-  top: 252px;
-  left: 0;
-  width: 800px;
   display: flex;
-  gap: 8px;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  flex-shrink: 0;
   box-sizing: border-box;
+}
+
+.game-chat-column .message-composer {
+  position: relative;
+  top: auto;
+  left: auto;
 }
 
 .message-composer-input {

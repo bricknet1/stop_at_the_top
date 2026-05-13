@@ -1,6 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import DesignViewport from "./DesignViewport.js";
+import DesignViewport, {
+  APP_VIEWPORT_DESIGN_HEIGHT,
+  APP_VIEWPORT_DESIGN_WIDTH,
+} from "./DesignViewport.js";
+import ChatColumn from './ChatColumn.js';
 // import io from 'socket.io-client';
 import { SocketListener } from '../classes/classes.js';
 // import {deck} from './deck.js'
@@ -51,14 +55,6 @@ function Game ({messages, setMessages}){
   const cardImage = "https://deckofcardsapi.com/static/img/";
 
   const{tableID} = useParams();
-
-  const messageDisplay = <div className="messages">
-    {messages.slice(0).reverse().map((msg, index) => 
-      <p className="message" key={index}>
-        {msg['username']}: {msg['message']}
-      </p>
-    )}
-  </div>
 
   // function handleSendMessage () {
   //   listener.sendMessage('test message')
@@ -421,7 +417,10 @@ function Game ({messages, setMessages}){
   }
 
   return (
-    <DesignViewport designWidth={820} designHeight={820}>
+    <DesignViewport
+      designWidth={APP_VIEWPORT_DESIGN_WIDTH}
+      designHeight={APP_VIEWPORT_DESIGN_HEIGHT}
+    >
       <div className="play-area">
         {showAwaitingSyncedGame ? (
           <div className="sync-gate-card-area" role="status">
@@ -613,32 +612,14 @@ function Game ({messages, setMessages}){
         {/* <button onClick={losetest}>All Lose</button> */}
         {/* <button onClick={handleOutcomes}>Outcome</button> */}
       </div>
-      <div className="below-play">
-        Total players: {players.length}<br/>
-        Total messages: {messages.length}
-        {messageDisplay}
-        <div className="message-composer">
-          <input
-            type="text"
-            className="message-composer-input"
-            value={messageDraft}
-            onChange={(e) => setMessageDraft(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                handleSendRoomMessage()
-              }
-            }}
-            placeholder="Type a message to the room…"
-            aria-label="Message to the room"
-            maxLength={500}
-            autoComplete="off"
-          />
-          <button type="button" className="message-composer-send" onClick={handleSendRoomMessage}>
-            Send
-          </button>
-        </div>
-      </div>
+      <ChatColumn
+        messages={messages}
+        messageDraft={messageDraft}
+        onDraftChange={setMessageDraft}
+        onSend={handleSendRoomMessage}
+        playerCount={players.length}
+        messageCount={messages.length}
+      />
     </DesignViewport>
   );
 }

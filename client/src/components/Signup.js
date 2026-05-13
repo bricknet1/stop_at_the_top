@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import DesignViewport from './DesignViewport.js';
+import DesignViewport, {
+  APP_VIEWPORT_DESIGN_HEIGHT,
+  APP_VIEWPORT_DESIGN_WIDTH,
+} from './DesignViewport.js';
+import ChatColumn from './ChatColumn.js';
 import { useFormik } from "formik";
 import * as yup from "yup";
 import {useDispatch} from 'react-redux';
@@ -69,7 +73,10 @@ function Signup() {
   })
 
   return (
-    <DesignViewport designWidth={810} designHeight={680}>
+    <DesignViewport
+      designWidth={APP_VIEWPORT_DESIGN_WIDTH}
+      designHeight={APP_VIEWPORT_DESIGN_HEIGHT}
+    >
     <div className="play-area">
       <div className='signup-login'>
         <h2>Create an Account</h2>
@@ -94,6 +101,7 @@ function Signup() {
         <button className='loginsignupbtn' onClick={handleLogin}>Login Instead</button></>}
       </div>
     </div>
+    <ChatColumn disabled />
     </DesignViewport>
   );
 }

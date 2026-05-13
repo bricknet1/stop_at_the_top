@@ -1,5 +1,10 @@
 import { useLayoutEffect, useRef, useState } from 'react';
 
+/** Full canvas width: play-area outer 810px + right column 200px. */
+export const APP_VIEWPORT_DESIGN_WIDTH = 1010;
+/** Full canvas height: play-area 500px content + 5px top and bottom border. */
+export const APP_VIEWPORT_DESIGN_HEIGHT = 510;
+
 /**
  * Scales fixed "design px" children to fit the available rectangle without page scroll.
  * Children should use position:absolute within the canvas using (0,0) as the design origin.

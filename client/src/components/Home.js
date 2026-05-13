@@ -1,6 +1,10 @@
 import { useFormik } from "formik";
 import { useState } from 'react';
-import DesignViewport from './DesignViewport.js';
+import DesignViewport, {
+  APP_VIEWPORT_DESIGN_HEIGHT,
+  APP_VIEWPORT_DESIGN_WIDTH,
+} from './DesignViewport.js';
+import ChatColumn from './ChatColumn.js';
 // import {useDispatch} from 'react-redux';
 
 const TABLE_CODE_LENGTH = 4;
@@ -49,7 +53,10 @@ function Home ({user, navigate, setMessages}){
   const joinDisabled = formik.values.table.trim().length !== TABLE_CODE_LENGTH;
 
   return (
-    <DesignViewport designWidth={810} designHeight={560}>
+    <DesignViewport
+      designWidth={APP_VIEWPORT_DESIGN_WIDTH}
+      designHeight={APP_VIEWPORT_DESIGN_HEIGHT}
+    >
     <div className="play-area">
       <div className="card" id="card1"></div>
       <div className="card" id="card2"></div>
@@ -108,6 +115,7 @@ function Home ({user, navigate, setMessages}){
         <p>{error?error:""}</p>
       </div>
     </div>
+    <ChatColumn disabled />
     </DesignViewport>
   );
 }
