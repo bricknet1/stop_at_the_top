@@ -69,10 +69,18 @@ function App() {
     // <UserContext.Provider value={SocketListener}>
       <div className="app">
         <header className="app-user-bar">
-          <span className="app-user-bar-meta">
-            User: {user.username} ♠️♦️ Chips: {user.chips} ♣️♥️
-          </span>
-          {user && <button type="button" onClick={handleLogout}>Logout</button>}
+          {user.id !== 0 ? (
+            <>
+              <span className="app-user-bar-meta">
+                User: {user.username} ♠️♦️ Chips: {user.chips} ♣️♥️
+              </span>
+              <button type="button" onClick={handleLogout}>Logout</button>
+            </>
+          ) : (
+            <span className="app-user-bar-meta app-user-bar-placeholder" aria-label="Not signed in">
+              ♠️♦️♣️♥️
+            </span>
+          )}
         </header>
         <div className="app-main">
           <Routes>
