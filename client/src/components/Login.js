@@ -51,43 +51,73 @@ function Login() {
       designWidth={APP_VIEWPORT_DESIGN_WIDTH}
       designHeight={APP_VIEWPORT_DESIGN_HEIGHT}
     >
-    <div className="play-area">
-      <div className="signup-login">
-        <h2>Login</h2>
-        {error && <h3 style={{ color: "#4FC9C2" }}> {error}</h3>}
-        <form onSubmit={formik.handleSubmit}>
-          <label>Username</label>
-          <br></br>
-          <input
-            type="text"
-            name="username"
-            value={formik.values.username}
-            onChange={formik.handleChange}
-          />
-          <br></br>
-          <br></br>
-          <label>Password</label>
-          <br></br>
-          <input
-            type="password"
-            name="password"
-            value={formik.values.password}
-            onChange={formik.handleChange}
-          />
-          <br></br>
-          <br></br>
-          <input type="submit" value="Log In!" />
-        </form>
-        <br />
-        <br />
-        <br />
-        <p>New to Stop at the Top?</p>
-        <button className="loginsignupbtn" onClick={handleSignup}>
-          Signup Instead
-        </button>
+      <div className="play-area">
+        <div className="card" id="card1"></div>
+        <div className="card" id="card2"></div>
+        <div className="card" id="card3"></div>
+        <div className="card" id="card4"></div>
+        <div className="card" id="card5"></div>
+        <div className="card" id="card6"></div>
+        <div className="home-hero">
+          <h1 className="howyouwinthegame">Stop at the Top!</h1>
+          <p className="howyouwinthegame-tagline">
+            The name of the game is how you win the game!
+          </p>
+        </div>
+        <div className="create-join login-panel">
+          <form
+            className="create-join-form login-form"
+            onSubmit={formik.handleSubmit}
+          >
+            <div className="login-form__row">
+              <div className="login-form__column login-form__column--primary">
+                {error ? (
+                  <p className="login-form__error" role="alert">
+                    {error}
+                  </p>
+                ) : null}
+                <div className="create-join__join-section login-form__fields">
+                  <input
+                    type="text"
+                    name="username"
+                    className="create-join__code-input"
+                    placeholder="Username"
+                    autoComplete="username"
+                    value={formik.values.username}
+                    onChange={formik.handleChange}
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    className="create-join__code-input"
+                    placeholder="Password"
+                    autoComplete="current-password"
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                  />
+                  <button
+                    type="submit"
+                    className="bet-controls-place create-join__btn"
+                  >
+                    Log in
+                  </button>
+                </div>
+              </div>
+              <div className="login-form__column login-form__column--secondary">
+                <p className="login-form__hint">New to Stop at the Top?</p>
+                <button
+                  type="button"
+                  className="bet-controls-place create-join__btn"
+                  onClick={handleSignup}
+                >
+                  Sign up instead
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-    </div>
-    <ChatColumn disabled />
+      <ChatColumn disabled />
     </DesignViewport>
   );
 }
