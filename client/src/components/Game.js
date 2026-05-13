@@ -366,8 +366,13 @@ function Game ({messages, setMessages}){
     return false
   }
 
-  /** Everyone still at the table must place a bet before the host can reveal. */
-  const activePlayers = players.filter((p) => p && p.username)
+  /**
+   * Seats in the current round (excludes mid-game joiners who are waiting for the
+   * next shuffle — they keep bet 0 and must not block the host reveal button).
+   */
+  const activePlayers = players.filter(
+    (p) => p && p.username && !p.awaitingNextRound
+  )
   const allActivePlayersPlacedBet =
     activePlayers.length > 0 &&
     activePlayers.every((p) => (p.bet ?? 0) >= MIN_BET)

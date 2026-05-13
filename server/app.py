@@ -29,10 +29,31 @@ MIN_BET = 10
 
 def _all_seated_players_met_min_bet(players):
     """Seated players are those with a username; game requires each to have bet >= MIN_BET."""
-    seated = [p for p in (players or []) if p.get("username")]
+    seated = [
+        p
+        for p in (players or [])
+        if p.get("username") and not p.get("awaitingNextRound")
+    ]
     if not seated:
         return False
     return all((p.get("bet") or 0) >= MIN_BET for p in seated)
+
+
+def _player_record_for_clients(player, *, chips=None, bet=None):
+    """Stable wire shape for table state; preserves awaitingNextRound when set."""
+    row = dict(player)
+    if chips is not None:
+        row["chips"] = chips
+    if bet is not None:
+        row["bet"] = bet
+    out = {
+        "username": row.get("username"),
+        "chips": row.get("chips"),
+        "bet": row.get("bet"),
+    }
+    if row.get("awaitingNextRound"):
+        out["awaitingNextRound"] = True
+    return out
 
 
 def _broadcast_dealer_markers_shout(table):
@@ -149,9 +170,11 @@ def placebet(data):
     currentPlayers = tables[table]["players"]
     all_in_before = _all_seated_players_met_min_bet(currentPlayers)
     updatedPlayers = [
-        {"username": player.get("username"), "chips": player.get("chips"), "bet": player.get("bet")}
-        if player.get("username") != username
-        else {"username": username, "chips": chips, "bet": bet}
+        _player_record_for_clients(
+            player,
+            chips=chips if player.get("username") == username else None,
+            bet=bet if player.get("username") == username else None,
+        )
         for player in currentPlayers
     ]
     print(updatedPlayers)
@@ -177,7 +200,20 @@ def connect(auth):
     
     if not any(obj["username"] == username for obj in tables[table]["players"]):
         tables[table]["playercount"] += 1
-        tables[table]["players"].append({"username":username, "chips":user.chips, "bet":0})
+        existing = tables[table]["players"]
+        # Anyone already committed MIN_BET means a hand is in progress; this seat
+        # waits for the next shuffle (client sync) and must not block host actions.
+        round_in_progress = any((p.get("bet") or 0) >= MIN_BET for p in existing)
+        tables[table]["players"].append(
+            _player_record_for_clients(
+                {
+                    "username": username,
+                    "chips": user.chips,
+                    "bet": 0,
+                    "awaitingNextRound": bool(round_in_progress),
+                }
+            )
+        )
     print(f"{tables[table]}")
     print(f"{username} joined table {table}")
     # emit("newplayer", username, to=table)
@@ -211,6 +247,8 @@ newDeck = ["2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "0S", "JS", "QS", "KS
 @socketio.on("shuffle")
 def shuffle():
     table = session.get("table")
+    for p in tables[table].get("players") or []:
+        p["awaitingNextRound"] = False
     tables[table]["markers"] = {0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}
     tables[table]["marker_passes"] = []
     emit("markerplaced", tables[table]["markers"], to=table)
