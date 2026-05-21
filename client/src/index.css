@@ -299,6 +299,7 @@ body {
   border-style: dotted;
   border-radius: 60px;
   box-sizing: border-box;
+  padding-left: 3px;
 }
 
 /* Seat colors: same palette for .player.player-seat-N and .marker.marker-seat-N */
