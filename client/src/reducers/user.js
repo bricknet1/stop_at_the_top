@@ -1,12 +1,14 @@
-const userReducer = (state = {username:"temp", chips:0, id:0}, action) => {
-  switch(action.type){
-    case 'SETUSER':
-      return state=action.payload;
-    case 'LOGOUTUSER':
-      return state={username:"temp", chips:0, id:0};
+const emptyUser = { username: "", chips: 0 };
+
+const userReducer = (state = emptyUser, action) => {
+  switch (action.type) {
+    case "SETUSER":
+      return action.payload;
+    case "LOGOUTUSER":
+      return emptyUser;
     default:
       return state;
   }
-}
+};
 
 export default userReducer;

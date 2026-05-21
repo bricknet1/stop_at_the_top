@@ -1,56 +1,78 @@
 import { useFormik } from "formik";
-import { useState } from 'react';
+import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import DesignViewport, {
   APP_VIEWPORT_DESIGN_HEIGHT,
   APP_VIEWPORT_DESIGN_WIDTH,
-} from './DesignViewport.js';
-import ChatColumn from './ChatColumn.js';
-// import {useDispatch} from 'react-redux';
+} from "./DesignViewport.js";
+import ChatColumn from "./ChatColumn.js";
+import { setUser } from "../actions";
+import { MAX_USERNAME_LENGTH, STARTING_CHIPS } from "../constants.js";
 
 const TABLE_CODE_LENGTH = 4;
 
-function Home ({user, navigate, setMessages}){
-
-  // const dispatch = useDispatch();
-
+function Home({ navigate, setMessages }) {
+  const dispatch = useDispatch();
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    dispatch(setUser({ username: "", chips: 0 }));
+  }, [dispatch]);
 
   const formik = useFormik({
     initialValues: {
+      username: "",
       table: "",
       join: false,
-      create: false
+      create: false,
     },
     onSubmit: (values) => {
-      values.join = Boolean(values.join)
-      values.create = Boolean(values.create)
-      values.table = values.table.toUpperCase()
-      console.log(values);
+      const username = values.username.trim();
+      if (!username) {
+        setError("Enter a username to play.");
+        return;
+      }
+      if (username.length > MAX_USERNAME_LENGTH) {
+        setError(`Username can't exceed ${MAX_USERNAME_LENGTH} characters.`);
+        return;
+      }
+
+      const payload = {
+        username,
+        table: values.table.toUpperCase(),
+        join: Boolean(values.join),
+        create: Boolean(values.create),
+      };
+
       fetch("/table", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       }).then((res) => {
         if (res.ok) {
           res.json().then((data) => {
-            console.log(data);
-            setMessages(data.messages)
+            dispatch(setUser({ username, chips: STARTING_CHIPS }));
+            setMessages(data.messages);
             navigate(`/table/${data.table}`);
           });
         } else {
-          res.json().then((error) => {
-            setError(error.error)
-            formik.values.join=false
-            formik.values.create=false
+          res.json().then((body) => {
+            setError(body.error || "Could not join table.");
+            formik.setFieldValue("join", false);
+            formik.setFieldValue("create", false);
           });
         }
       });
     },
   });
 
-  const joinDisabled = formik.values.table.trim().length !== TABLE_CODE_LENGTH;
+  const joinDisabled =
+    formik.values.table.trim().length !== TABLE_CODE_LENGTH ||
+    !formik.values.username.trim();
+
+  const createDisabled = !formik.values.username.trim();
 
   const handleCreateTable = () => {
     formik
@@ -63,66 +85,86 @@ function Home ({user, navigate, setMessages}){
       designWidth={APP_VIEWPORT_DESIGN_WIDTH}
       designHeight={APP_VIEWPORT_DESIGN_HEIGHT}
     >
-    <div className="play-area">
-      <div className="card" id="card1"></div>
-      <div className="card" id="card2"></div>
-      <div className="card" id="card3"></div>
-      <div className="card" id="card4"></div>
-      <div className="card" id="card5"></div>
-      <div className="card" id="card6"></div>
-      <div className="home-hero">
-        <h1 className='howyouwinthegame'>Stop at the Top!</h1>
-        <p className="howyouwinthegame-tagline">
-          The name of the game is how you win the game!
-        </p>
-      </div>
-      <div className="create-join">
-        <form className="create-join-form" onSubmit={formik.handleSubmit}>
-          {/* Create is type="button" so Enter in the code field only triggers the sole
-              type="submit" (join), not implicit submission of the first submit control. */}
-          <button
-            type="button"
-            className="bet-controls-place create-join__btn"
-            onClick={handleCreateTable}
-          >
-            Create a New Table
-          </button>
-          <div className="create-join__join-section">
+      <div className="play-area home-lobby">
+        <div className="card" id="card1"></div>
+        <div className="card" id="card2"></div>
+        <div className="card" id="card3"></div>
+        <div className="card" id="card4"></div>
+        <div className="card" id="card5"></div>
+        <div className="card" id="card6"></div>
+        <div className="home-lobby__panel">
+          <div className="home-hero home-lobby__hero">
+            <h1 className="howyouwinthegame">Stop at the Top!</h1>
+            <p className="howyouwinthegame-tagline">
+              The name of the game is how you win the game!
+            </p>
+          </div>
+          <form className="home-lobby-form" onSubmit={formik.handleSubmit}>
             <input
               type="text"
-              name="table"
-              className="create-join__code-input"
-              placeholder="Enter Table Code Here"
-              value={formik.values.table}
+              name="username"
+              className="create-join__code-input home-lobby-form__input"
+              placeholder="Username"
+              value={formik.values.username}
               onChange={formik.handleChange}
-              maxLength={TABLE_CODE_LENGTH}
-              autoCapitalize="characters"
+              maxLength={MAX_USERNAME_LENGTH}
+              autoComplete="off"
               spellCheck="false"
             />
             <button
-              type="submit"
-              name="join"
-              value={Boolean(true)}
-              className="bet-controls-place create-join__btn"
-              onClick={formik.handleChange}
-              disabled={joinDisabled}
-              title={
-                joinDisabled
-                  ? `Enter exactly ${TABLE_CODE_LENGTH} characters to join`
-                  : undefined
-              }
+              type="button"
+              className="bet-controls-place home-lobby-form__btn home-lobby-form__btn--create"
+              onClick={handleCreateTable}
+              disabled={createDisabled}
+              title={createDisabled ? "Enter a username first" : undefined}
             >
-              Enter Table Code to Join a Table
+              Create Table
             </button>
-          </div>
-        </form><br/>
-        {/* <button name="createtable">Create a New Table</button> */}
-        <p>{error?error:""}</p>
+            <fieldset className="home-lobby-form__join-group">
+              <legend className="home-lobby-form__join-legend">
+                Join an existing table
+              </legend>
+              <div className="home-lobby-form__join-row">
+                <input
+                  type="text"
+                  name="table"
+                  className="create-join__code-input home-lobby-form__input home-lobby-form__input--code"
+                  placeholder="Code"
+                  aria-label="Table code"
+                  value={formik.values.table}
+                  onChange={formik.handleChange}
+                  maxLength={TABLE_CODE_LENGTH}
+                  autoCapitalize="characters"
+                  spellCheck="false"
+                />
+                <button
+                  type="submit"
+                  name="join"
+                  value={Boolean(true)}
+                  className="bet-controls-place home-lobby-form__btn home-lobby-form__btn--join"
+                  onClick={formik.handleChange}
+                  disabled={joinDisabled}
+                  title={
+                    joinDisabled
+                      ? `Enter a username and a ${TABLE_CODE_LENGTH}-letter table code`
+                      : undefined
+                  }
+                >
+                  Join Table
+                </button>
+              </div>
+            </fieldset>
+            {error ? (
+              <p className="home-lobby-form__error" role="alert">
+                {error}
+              </p>
+            ) : null}
+          </form>
+        </div>
       </div>
-    </div>
-    <ChatColumn disabled />
+      <ChatColumn disabled />
     </DesignViewport>
   );
 }
 
-export default Home
+export default Home;

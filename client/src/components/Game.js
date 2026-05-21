@@ -77,6 +77,10 @@ function Game ({messages, setMessages}){
 
   const updateAllPlayers = (players) => {
     dispatch(setAllPlayers(players))
+    const me = players.find((p) => p && p.username === user.username)
+    if (me) {
+      dispatch(setUser({ username: user.username, chips: me.chips }))
+    }
   }
   
   const cardRanks = ['A', 'K', 'Q', 'J', '0', '9', '8', '7', '6', '5', '4', '3', '2']
@@ -300,28 +304,15 @@ function Game ({messages, setMessages}){
     if (betPlaced) return
     if (bet < MIN_BET) return
     const stake = bet
-    const values = { chips: user.chips - stake }
-    fetch(`/users/${user.id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(values)
+    const newChips = user.chips - stake
+    dispatch(setUser({ username: user.username, chips: newChips }))
+    setOfficialBet(stake)
+    setBetPlaced(true)
+    listener.placeBet({
+      username: user.username,
+      chips: newChips,
+      bet: stake,
     })
-      .then((res) => {
-        if (res.ok) {
-          res.json().then((data) => {
-            dispatch(setUser(data))
-            setOfficialBet(stake)
-            setBetPlaced(true)
-            listener.placeBet({
-              username: user.username,
-              chips: user.chips - stake,
-              bet: stake
-            })
-          })
-        }
-      })
   }
 
   // const wintest = () => {

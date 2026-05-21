@@ -1,6 +1,6 @@
 # Stop at the Top
 
-Real-time multiplayer card game with a React client and a Flask + Socket.IO backend. Players join tables with room codes, place bets, and play with live updates over WebSockets.
+Real-time multiplayer card game with a React client and a Flask + Socket.IO backend. Players enter a display name, create or join tables with room codes, and play with live updates over WebSockets — no accounts or saved profiles.
 
 ## Credits
 
@@ -12,8 +12,8 @@ Real-time multiplayer card game with a React client and a Flask + Socket.IO back
 | Layer | Technologies |
 |--------|----------------|
 | **Client** | React 18, Redux Toolkit, React Router, Socket.IO client, Create React App |
-| **Server** | Flask, Flask-RESTful, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate, Flask-Bcrypt |
-| **Data** | SQLite locally (under `server/instance/` by default); PostgreSQL when deployed (e.g. Render) |
+| **Server** | Flask, Flask-RESTful, Flask-SocketIO, Flask-SQLAlchemy, Flask-Migrate |
+| **Data** | In-memory tables during play; SQLite/PostgreSQL only for optional migrations (no player accounts) |
 
 ## Prerequisites
 
@@ -46,13 +46,12 @@ cd client && npm install && cd ..
 
 ### 2. Database (first run or after pulling new migrations)
 
-The API expects migrated tables. Seed data adds a default local user (see [server/seed.py](server/seed.py)).
+Run migrations once to apply schema changes (legacy `users` table is dropped). No seed users are required—players pick a display name when creating or joining a table.
 
 ```bash
 cd server
 export FLASK_APP=app   # Windows (cmd): set FLASK_APP=app
 pipenv run flask db upgrade
-pipenv run python seed.py
 cd ..
 ```
 
@@ -127,7 +126,7 @@ stop_at_the_top/
 | `client/` | `npm test` | Jest test runner |
 | `server/` | `python app.py` | Dev server with debug + Socket.IO on port 5555 |
 | `server/` | `flask db upgrade` | Apply database migrations (`FLASK_APP=app`) |
-| `server/` | `python seed.py` | Reset seed users (see [server/seed.py](server/seed.py)) |
+| `server/` | `python seed.py` | No-op (players are ephemeral, in-memory only) |
 
 ## Deployment notes
 

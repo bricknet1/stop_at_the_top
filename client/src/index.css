@@ -454,6 +454,109 @@ body {
   top: 340px;
 }
 
+/* Home lobby: compact panel below decorative cards (fits 500px play-area). */
+.play-area.home-lobby .home-lobby__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 152px;
+  bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.25rem;
+  box-sizing: border-box;
+}
+
+.play-area.home-lobby .home-lobby__hero {
+  position: static;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.play-area.home-lobby .home-lobby__hero .howyouwinthegame {
+  position: static;
+  width: auto;
+  font-size: 48px;
+  line-height: 1;
+  margin: 0;
+}
+
+.play-area.home-lobby .home-lobby__hero .howyouwinthegame-tagline {
+  font-size: 26px;
+  margin: 0.15rem 0 0;
+  line-height: 1.1;
+}
+
+.home-lobby-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 20rem;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.home-lobby-form__btn {
+  width: 100%;
+  padding: 0.45rem 0.35rem;
+  font-size: 0.88rem;
+  line-height: 1.2;
+}
+
+.home-lobby-form__btn--create {
+  flex-shrink: 0;
+}
+
+.home-lobby-form__join-group {
+  margin: 0;
+  padding: 0.45rem 0.55rem 0.5rem;
+  border: 2px solid rgba(255, 215, 0, 0.45);
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+.home-lobby-form__join-legend {
+  padding: 0 0.35rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: rgba(255, 235, 150, 0.95);
+}
+
+.home-lobby-form__join-row {
+  display: grid;
+  grid-template-columns: 5.25rem 1fr;
+  gap: 0.4rem;
+  align-items: stretch;
+}
+
+.home-lobby-form__input--code {
+  text-align: center;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  text-transform: uppercase;
+  min-width: 0;
+}
+
+.home-lobby-form__error {
+  margin: 0;
+  padding: 0.25rem 0.35rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: #ffcccc;
+  background: rgba(80, 0, 0, 0.35);
+  border-radius: 4px;
+}
+
 .create-join {
   text-align: center;
   position: absolute;

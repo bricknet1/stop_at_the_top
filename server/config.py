@@ -19,7 +19,6 @@ from flask import Flask, request, make_response, session, jsonify, abort, render
 from flask_migrate import Migrate
 from flask_restful import Api
 from flask_cors import CORS
-from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -47,7 +46,6 @@ else:
     CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
-bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SESSION_COOKIE_SAMESITE']='Strict'
 app.json.compact = False

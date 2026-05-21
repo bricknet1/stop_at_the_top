@@ -12,19 +12,19 @@ if dotenv_path.exists():
 
 from flask import request, make_response, session, jsonify, abort, render_template, redirect, url_for
 from flask_restful import Resource
-from werkzeug.exceptions import NotFound, Unauthorized
 from flask_socketio import join_room, leave_room, send, SocketIO, emit
 import random
 from string import ascii_uppercase
 
-from models import User
-from config import app, db, api
+from config import app, api
 
 socketio = SocketIO(app, cors_allowed_origins="*", manage_session=False)
 
 tables = {}
 
 MIN_BET = 10
+STARTING_CHIPS = 1000
+MAX_USERNAME_LENGTH = 10
 
 
 def _all_seated_players_met_min_bet(players):
@@ -68,6 +68,46 @@ def _broadcast_dealer_markers_shout(table):
     tables[table]["messages"].append(content)
 
 
+def _normalize_username(raw):
+    if raw is None:
+        return None
+    username = str(raw).strip()
+    if not username or len(username) > MAX_USERNAME_LENGTH:
+        return None
+    return username
+
+
+def _player_payload(player):
+    return {
+        "username": player.get("username"),
+        "chips": player.get("chips"),
+    }
+
+
+def _username_taken_at_table(table_state, username):
+    return any(
+        p.get("username") == username for p in table_state.get("players", [])
+    )
+
+
+def _username_in_use_at_table(table_state, username):
+    if _username_taken_at_table(table_state, username):
+        return True
+    return username in table_state.get("pending_usernames", [])
+
+
+def _reserve_table_username(table_state, username):
+    pending = table_state.setdefault("pending_usernames", [])
+    if username not in pending:
+        pending.append(username)
+
+
+def _release_table_username(table_state, username):
+    pending = table_state.get("pending_usernames", [])
+    if username in pending:
+        pending.remove(username)
+
+
 def generate_unique_code(length):
     while True:
         code = ""
@@ -79,24 +119,53 @@ def generate_unique_code(length):
 
 @app.route('/table', methods=["POST"])
 def table():
-    # session.clear()
+    data = request.get_json() or {}
 
-    data = request.get_json()
+    username = _normalize_username(data.get("username"))
+    if not username:
+        return make_response(
+            {'error': f"Enter a username (1–{MAX_USERNAME_LENGTH} characters)."},
+            400,
+        )
 
-    table = data["table"]
-    join = data["join"]
-    create = data["create"]
+    table = data.get("table", "")
+    join = data.get("join")
+    create = data.get("create")
 
     if join != False and not table:
         return make_response({'error':"Enter a room code."}, 404)
 
     if create != False:
         table = generate_unique_code(4)
-        tables[table] = {"playercount":0, "messages": [], 'table':table, "deck": [], "players":[], "markers":{0:[], 1:[], 2:[], 3:[], 4:[], 5:[]}, "marker_passes": []}
+        tables[table] = {
+            "playercount": 0,
+            "messages": [],
+            "table": table,
+            "deck": [],
+            "players": [],
+            "markers": {0: [], 1: [], 2: [], 3: [], 4: [], 5: []},
+            "marker_passes": [],
+            "pending_usernames": [],
+        }
     elif table not in tables:
         return make_response({'error':"Room does not exist."}, 404)
+    elif _username_in_use_at_table(tables[table], username):
+        reconnecting = (
+            session.get("username") == username and session.get("table") == table
+        )
+        if not reconnecting:
+            return make_response(
+                {'error': "That username is already at this table."}, 400
+            )
 
+    session.pop('user_id', None)
+    old_username = session.get("username")
+    old_table = session.get("table")
+    if old_table in tables and old_username:
+        _release_table_username(tables[old_table], old_username)
+    session['username'] = username
     session['table'] = table
+    _reserve_table_username(tables[table], username)
     # emit("newplayer", username, to=table)
     # print(session)
     # print(tables)
@@ -187,7 +256,6 @@ def placebet(data):
 def connect(auth):
     table = session.get("table")
     username = session.get("username")
-    user = User.query.filter_by(username=username).first()
     if not table or not username:
         return
     if table not in tables:
@@ -208,15 +276,21 @@ def connect(auth):
             _player_record_for_clients(
                 {
                     "username": username,
-                    "chips": user.chips,
+                    "chips": STARTING_CHIPS,
                     "bet": 0,
                     "awaitingNextRound": bool(round_in_progress),
                 }
             )
         )
+        _release_table_username(tables[table], username)
+        emit("setuser", _player_payload(tables[table]["players"][-1]), to=request.sid)
+    else:
+        for player in tables[table]["players"]:
+            if player.get("username") == username:
+                emit("setuser", _player_payload(player), to=request.sid)
+                break
     print(f"{tables[table]}")
     print(f"{username} joined table {table}")
-    # emit("newplayer", username, to=table)
     emit("setplayers", tables[table]["players"], to=table)
     emit("markerpasses", tables[table].get("marker_passes", []))
 
@@ -227,6 +301,7 @@ def disconnect():
     leave_room(table)
 
     if table in tables:
+        _release_table_username(tables[table], username)
         currentPlayers = tables[table]["players"]
         updatedPlayers = [player for player in currentPlayers if player.get("username") != username]
         tables[table]["players"] = updatedPlayers
@@ -267,11 +342,7 @@ def payout(data):
         if data[i] == "superwin":
             currentPlayers[i]["chips"] = currentPlayers[i]["chips"]+(3*(currentPlayers[i]["bet"]))
         currentPlayers[i]["bet"] = 0
-        user = User.query.filter_by(username=currentPlayers[i]["username"]).first()
-        setattr(user, "chips", currentPlayers[i]["chips"])
-        db.session.add(user)
-        db.session.commit()
-        emit("setuser", user.to_dict(), to=table)
+        emit("setuser", _player_payload(currentPlayers[i]), to=table)
     tables[table]["players"] = currentPlayers
     emit("setplayers", tables[table]["players"], to=table)
 
@@ -284,61 +355,6 @@ def reveal():
     emit("markerpasses", [], to=table)
     emit("reveal", to=table)
 
-
-class Signup(Resource):
-    def post(self):
-        data = request.get_json()
-        try:
-            user = User(
-                username=data['username'],
-                email=data['email']
-            )
-            user.password_hash = data['password']
-            db.session.add(user)
-            db.session.commit()
-            session['user_id'] = user.id
-            session['username'] = user.username
-            return make_response(user.to_dict(), 201)
-        except Exception as e:
-            return make_response({'error': str(e)}, 400)
-api.add_resource(Signup, '/signupdb')
-
-class Login(Resource):
-    def post(self):
-        data = request.get_json()
-        user = User.query.filter_by(username=data['username']).first()
-        if user:
-            if user.authenticate(data['password']):
-                session['user_id'] = user.id
-                session['username'] = user.username
-                return make_response(user.to_dict(), 200)
-            else:
-                abort(404, 'Incorrect username or password.')
-        else:
-            abort(404, 'Incorrect username or password.')
-api.add_resource(Login, '/logindb')
-
-class AuthorizedSession(Resource):
-    def get(self):
-        try:
-            user = User.query.filter_by(id=session['user_id']).first()
-            return make_response(user.to_dict(), 200)
-        except:
-            abort(401, "Not Authorized")
-api.add_resource(AuthorizedSession, '/authorizeddb')
-
-def _get_current_user_from_session():
-    """
-    Ensures the caller is an authenticated user (session cookie).
-    Reuses the same session model as /authorizeddb.
-    """
-    user_id = session.get('user_id')
-    if not user_id:
-        abort(401, "Not Authorized")
-    user = User.query.filter_by(id=user_id).first()
-    if not user:
-        abort(401, "Not Authorized")
-    return user
 
 def _require_admin_token():
     """
@@ -363,19 +379,6 @@ def _require_admin_token():
         abort(403, "Forbidden")
     return True
 
-class Logout(Resource):
-    def delete(self):
-        session['user_id'] = None
-        return make_response('', 204)
-api.add_resource(Logout, '/logoutdb')
-
-class UsersList(Resource):
-    def get(self):
-        _require_admin_token()
-        users = User.query.all()
-        return make_response([user.to_dict() for user in users], 200)
-api.add_resource(UsersList, '/users')
-
 class TablesList(Resource):
     def get(self):
         _require_admin_token()
@@ -396,46 +399,6 @@ class TablesList(Resource):
         return make_response({"tables": payload}, 200)
 
 api.add_resource(TablesList, '/tables')
-
-class Users(Resource):
-    def get(self, id):
-        _require_admin_token()
-        user = User.query.filter_by(id=id).first()
-        if not user:
-            abort(404, "User not found")
-        return make_response(user.to_dict(), 200)
-
-    def patch(self, id):
-        # Admins can modify any user; players can only modify their own record.
-        current_user = None
-        try:
-            _require_admin_token()
-        except Exception:
-            current_user = _get_current_user_from_session()
-
-        if current_user is not None and current_user.id != id:
-            abort(403, "Forbidden")
-
-        user = User.query.filter_by(id=id).first()
-        data = request.get_json()
-        if not user:
-            raise NotFound
-        for attr in data:
-            setattr(user, attr, data[attr])
-        db.session.add(user)
-        db.session.commit()
-        response = make_response(user.to_dict(), 200)
-        return response
-
-    def delete(self, id):
-        _require_admin_token()
-        user = User.query.filter_by(id=id).first()
-        if not user:
-            raise NotFound
-        db.session.delete(user)
-        db.session.commit()
-        return make_response('', 204)
-api.add_resource(Users, '/users/<int:id>')
 
 if __name__ == '__main__':
     socketio.run(app, host="0.0.0.0", port=5555, debug=True)

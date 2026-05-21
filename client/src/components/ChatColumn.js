@@ -1,6 +1,6 @@
 /**
  * Table chat UI in design pixels; same layout everywhere. When `disabled`, the
- * composer is inactive (e.g. login, signup, lobby).
+ * composer is inactive (e.g. lobby).
  */
 import { useLayoutEffect, useRef } from 'react'
 
