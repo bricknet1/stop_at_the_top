@@ -17,6 +17,11 @@ function Home({ navigate, setMessages }) {
 
   useEffect(() => {
     dispatch(setUser({ username: "", chips: 0 }));
+    const stored = sessionStorage.getItem("tableJoinError");
+    if (stored) {
+      setError(stored);
+      sessionStorage.removeItem("tableJoinError");
+    }
   }, [dispatch]);
 
   const formik = useFormik({

@@ -31,6 +31,14 @@ export class SocketListener {
       console.log("Connected to server");
     });
 
+    socket.on("joinrejected", (data) => {
+      sessionStorage.setItem(
+        "tableJoinError",
+        data?.error || "Could not join table."
+      );
+      window.location.assign("/");
+    });
+
     socket.on("disconnect", () => {
       console.log("Disconnected from server");
     });

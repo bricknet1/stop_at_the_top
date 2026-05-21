@@ -25,6 +25,7 @@ tables = {}
 MIN_BET = 10
 STARTING_CHIPS = 1000
 MAX_USERNAME_LENGTH = 10
+MAX_PLAYERS = 6
 
 
 def _all_seated_players_met_min_bet(players):
@@ -108,6 +109,23 @@ def _release_table_username(table_state, username):
         pending.remove(username)
 
 
+def _table_occupancy(table_state):
+    """Seated players plus reservations awaiting socket connect."""
+    players = table_state.get("players", [])
+    seated = {p.get("username") for p in players if p.get("username")}
+    pending = table_state.get("pending_usernames", [])
+    pending_only = sum(1 for u in pending if u not in seated)
+    return len(seated) + pending_only
+
+
+def _can_accept_new_player(table_state, username):
+    if _username_taken_at_table(table_state, username):
+        return True
+    if username in table_state.get("pending_usernames", []):
+        return True
+    return _table_occupancy(table_state) < MAX_PLAYERS
+
+
 def generate_unique_code(length):
     while True:
         code = ""
@@ -157,6 +175,11 @@ def table():
             return make_response(
                 {'error': "That username is already at this table."}, 400
             )
+    elif not _can_accept_new_player(tables[table], username):
+        return make_response(
+            {'error': "This table is full (6 players maximum)."},
+            400,
+        )
 
     session.pop('user_id', None)
     old_username = session.get("username")
@@ -261,12 +284,25 @@ def connect(auth):
     if table not in tables:
         leave_room(table)
         return
-    
+
+    seated = tables[table]["players"]
+    is_new_player = not any(
+        obj.get("username") == username for obj in seated
+    )
+    if is_new_player and len(seated) >= MAX_PLAYERS:
+        _release_table_username(tables[table], username)
+        emit(
+            "joinrejected",
+            {"error": "This table is full (6 players maximum)."},
+            to=request.sid,
+        )
+        return
+
     join_room(table)
     content = {"username": username, "message": "has joined the table"}
     send(content, to=table)
     
-    if not any(obj["username"] == username for obj in tables[table]["players"]):
+    if is_new_player:
         tables[table]["playercount"] += 1
         existing = tables[table]["players"]
         # Anyone already committed MIN_BET means a hand is in progress; this seat
