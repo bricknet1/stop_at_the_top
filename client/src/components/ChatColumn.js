@@ -31,8 +31,8 @@ function ChatColumn({
   }
 
   const metaText = disabled
-    ? 'Players: — · Messages: —'
-    : `Players: ${playerCount} · Messages: ${messageCount}`
+    ? 'Players: —'
+    : `Players: ${playerCount}`
 
   const messageList = disabled ? (
     <p className="game-chat-column__empty">
