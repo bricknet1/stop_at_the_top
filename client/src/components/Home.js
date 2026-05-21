@@ -97,13 +97,11 @@ function Home({ navigate, setMessages }) {
         <div className="card" id="card4"></div>
         <div className="card" id="card5"></div>
         <div className="card" id="card6"></div>
+        <h1 className="howyouwinthegame">Stop at the Top!</h1>
         <div className="home-lobby__panel">
-          <div className="home-hero home-lobby__hero">
-            <h1 className="howyouwinthegame">Stop at the Top!</h1>
-            <p className="howyouwinthegame-tagline">
-              The name of the game is how you win the game!
-            </p>
-          </div>
+          <p className="howyouwinthegame-tagline">
+            The name of the game is how you win the game!
+          </p>
           <form className="home-lobby-form" onSubmit={formik.handleSubmit}>
             <input
               type="text"
